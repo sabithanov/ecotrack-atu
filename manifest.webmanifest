@@ -1,0 +1,14 @@
+{
+  "name": "EcoTrack ATU — учёт пищевых отходов",
+  "short_name": "EcoTrack",
+  "description": "Цифровая система управления пищевыми отходами университетского комплекса АО «АТУ»",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f4",
+  "theme_color": "#13235b",
+  "lang": "ru",
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

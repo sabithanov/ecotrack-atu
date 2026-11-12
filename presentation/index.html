@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EcoTrack ATU — презентация</title>
+<style>
+  /* ✏️ Перед печатью замените ссылки и имена команды (ищите «✏️») */
+  @page { size: 1280px 720px; margin: 0; }
+  :root { --navy: #13235b; --green: #1f8a4c; --green2: #2fb766; --soft: #e9f6ee; --muted: #5b6b7f; --text: #14213d; --line: #dde5e0; --orange: #e08a00; --red: #c0352b; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #d9dee3; color: var(--text); font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+  .slide { width: 1280px; height: 720px; margin: 20px auto; background: #fff; position: relative; overflow: hidden; padding: 56px 68px 48px; page-break-after: always; break-after: page; box-shadow: 0 4px 24px rgba(0,0,0,.12); }
+  @media print { html, body { background: #fff; } .slide { margin: 0; box-shadow: none; } }
+  .slide::after { content: attr(data-n); position: absolute; right: 36px; bottom: 22px; font-size: 14px; color: #9aa7b6; }
+  .foot { position: absolute; left: 68px; bottom: 22px; font-size: 13px; color: #9aa7b6; }
+  h1 { font-size: 46px; margin: 0 0 14px; letter-spacing: -.02em; }
+  h2 { font-size: 36px; margin: 0 0 6px; letter-spacing: -.015em; color: var(--navy); }
+  .sub { font-size: 19px; color: var(--muted); margin: 0 0 26px; }
+  .kicker { font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--green); margin-bottom: 8px; }
+  .grid { display: grid; gap: 20px; }
+  .g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: repeat(3, 1fr); } .g4 { grid-template-columns: repeat(4, 1fr); }
+  .card { border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; background: #fbfcfb; }
+  .card h3 { margin: 0 0 8px; font-size: 20px; color: var(--navy); }
+  .card p, .card li { font-size: 16px; line-height: 1.45; margin: 0; color: #334155; }
+  .card ul { margin: 0; padding-left: 18px; } .card li { margin-bottom: 5px; }
+  .big { font-size: 50px; font-weight: 800; color: var(--green); letter-spacing: -.02em; line-height: 1.05; }
+  .big.navy { color: var(--navy); } .big.orange { color: var(--orange); } .big.red { color: var(--red); }
+  .src { font-size: 12px; color: #94a3b8; margin-top: 6px; }
+  .pill { display: inline-block; padding: 5px 12px; border-radius: 999px; background: var(--soft); color: #166e3b; font-weight: 700; font-size: 14px; margin: 0 6px 6px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 16px; }
+  th { text-align: left; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); border-bottom: 2px solid var(--line); padding: 8px 10px; }
+  td { padding: 9px 10px; border-bottom: 1px solid #edf1ee; }
+  td.num, th.num { text-align: right; }
+  tr.tot td { font-weight: 800; background: var(--soft); }
+  .shot { border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 8px 30px rgba(19,35,91,.15); display: block; }
+  .flow { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
+  .step { flex: 1; background: var(--soft); border: 1px solid #b9e0c7; border-radius: 12px; padding: 12px; text-align: center; font-size: 15px; font-weight: 600; color: #14532d; min-height: 74px; display: flex; align-items: center; justify-content: center; }
+  .step.bad { background: #fff1ef; border-color: #f3c3bc; color: #7f1d1d; }
+  .arrow { color: #94a3b8; font-size: 22px; flex: 0 0 auto; }
+  /* title */
+  .title { background: radial-gradient(900px 500px at 0% 0%, #1f8a4c33, transparent 60%), radial-gradient(900px 600px at 100% 100%, #2563eb22, transparent 60%), var(--navy); color: #fff; }
+  .title h1 { color: #fff; font-size: 64px; margin-top: 70px; }
+  .title .sub { color: #c7d2fe; font-size: 24px; max-width: 900px; }
+  .title .kicker { color: var(--green2); }
+  .title .logo { width: 90px; height: 90px; }
+  .title .meta { position: absolute; left: 68px; bottom: 54px; font-size: 18px; color: #dbe3ff; line-height: 1.6; }
+  .title .badge { display: inline-block; border: 1px solid #ffffff55; border-radius: 999px; padding: 6px 14px; margin-right: 8px; font-size: 15px; color: #fff; }
+  .title::after { color: #ffffff55; }
+  .timeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-top: 10px; }
+  .tl { border-top: 6px solid var(--green); background: #fbfcfb; border-radius: 0 0 12px 12px; padding: 14px; border-left: 1px solid var(--line); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .tl b { display: block; font-size: 17px; color: var(--navy); } .tl .when { font-size: 13px; color: var(--green); font-weight: 700; margin-bottom: 6px; }
+  .tl p { font-size: 14px; margin: 6px 0 0; color: #334155; line-height: 1.4; }
+  .note { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- 1. Титульный -->
+<section class="slide title" data-n="1">
+  <img class="logo" src="../assets/icon.svg" alt="">
+  <div class="kicker">Хакатон ATU «Smart Food Industries» · Трек 1</div>
+  <h1>EcoTrack ATU</h1>
+  <p class="sub">Цифровая система управления пищевыми отходами университетского комплекса<br><span style="color:#9fb0e8;font-size:20px">Университет кешенінің тағам қалдықтарын басқарудың цифрлық жүйесі</span></p>
+  <div style="margin-top:26px"><span class="badge">Смартфон + QR</span><span class="badge">Проверка отчётов</span><span class="badge">Единый реестр</span><span class="badge">Dashboard + CO₂</span><span class="badge">ҚАЗ / РУС</span></div>
+  <div class="meta">✏️ Команда: «Название команды» — ФИО 1, ФИО 2, ФИО 3<br>Алматы · 12 ноября 2026</div>
+</section>
+
+<!-- 2. Проблема -->
+<section class="slide" data-n="2">
+  <div class="kicker">Проблема в цифрах</div>
+  <h2>Отходы считают на бумаге, поэтому ими невозможно управлять</h2>
+  <p class="sub">5 организаций АТУ ведут таблицы учёта по одному образцу, но без общей базы, без проверки и без аналитики</p>
+  <div class="grid g4" style="margin-bottom:22px">
+    <div class="card"><div class="big">≈⅓</div><p>мирового продовольствия теряется или выбрасывается</p><div class="src">ФАО</div></div>
+    <div class="card"><div class="big orange">8–10%</div><p>глобальных выбросов парниковых газов связаны с пищевыми потерями</p><div class="src">ООН</div></div>
+    <div class="card"><div class="big navy">40–50%</div><p>твёрдых бытовых отходов в Казахстане — пищевые и органические</p><div class="src">экспертные оценки</div></div>
+    <div class="card"><div class="big red">≈36 ч</div><p>в месяц уходит в АТУ на ручной учёт, перенос и сведение 5 таблиц</p><div class="src">оценка команды, ≈440 взвешиваний/мес</div></div>
+  </div>
+  <div class="grid g3">
+    <div class="card"><h3>🌍 Экология</h3><p>Нет учёта переработки и данных для ESG и ЦУР 12.3. Почти всё уходит на полигон, а пригодно к переработке ≈43%.</p></div>
+    <div class="card"><h3>💸 Финансы</h3><p>Перерасход на закупку: «остатки нереализованной продукции» не видны руководству вовремя.</p></div>
+    <div class="card"><h3>⏱ Процесс</h3><p>Ручное сведение, ошибки и пропуски, нет контроля сроков и того, кто не сдал отчёт.</p></div>
+  </div>
+</section>
+
+<!-- 3. Аналоги -->
+<section class="slide" data-n="3">
+  <div class="kicker">Аналоги и их ограничения</div>
+  <h2>Готовые решения не подходят университетскому кампусу</h2>
+  <p class="sub">Нужен простой учёт с документооборотом в стандартах АТУ, а не дорогая «умная кухня»</p>
+  <table>
+    <tr><th>Решение</th><th>Что умеет</th><th>Ограничения для АТУ</th></tr>
+    <tr><td><b>Winnow, Orbisk</b> (Великобритания, Нидерланды)</td><td>ИИ-камера над баком, распознавание отходов</td><td>Дорогое оборудование и подписка в валюте; только кухня; нет сдачи отчётов организаций</td></tr>
+    <tr><td><b>Leanpath</b> (США)</td><td>Весы и планшет, аналитика потерь</td><td>Нет казахского и русского; нет форм АТУ и проверки отчётов; недоступно в РК</td></tr>
+    <tr><td><b>Excel / Google Forms</b></td><td>Бесплатно, привычно</td><td>Нет ролей, статусов, блокировки, истории и контроля несдавших; сведение вручную</td></tr>
+    <tr><td><b>Бумажный журнал</b> (сейчас)</td><td>Ничего не нужно настраивать</td><td>Нет аналитики и CO₂; ошибки при переносе; месяцы задержки</td></tr>
+    <tr style="background:#e9f6ee"><td><b>EcoTrack ATU</b></td><td>Формы по образцам АТУ, workflow, реестр, свод, dashboard, CO₂</td><td>Работает на любом смартфоне; ҚАЗ/РУС; бесплатный хостинг; готово к подключению весов (Трек 2)</td></tr>
+  </table>
+</section>
+
+<!-- 4. Решение -->
+<section class="slide" data-n="4">
+  <div class="kicker">Решение и ценность</div>
+  <h2>Полный цикл: от взвешивания до квартального отчёта</h2>
+  <div class="flow" style="margin:22px 0 26px">
+    <div class="step">📱 QR → форма организации</div><div class="arrow">→</div>
+    <div class="step">⚖️ Вес за 3 касания<br>(или голосом)</div><div class="arrow">→</div>
+    <div class="step">✅ Автопроверка<br>и итоги дня и месяца</div><div class="arrow">→</div>
+    <div class="step">📤 Отправка отчёта<br>одним действием</div><div class="arrow">→</div>
+    <div class="step">🔍 Принять или вернуть<br>с комментарием</div><div class="arrow">→</div>
+    <div class="step">📊 Реестр · свод · Excel · CO₂</div>
+  </div>
+  <div class="grid g4">
+    <div class="card"><h3>Ответственному лицу</h3><ul><li>≤30 секунд на запись</li><li>черновик не теряется</li><li>фото и новый вид отхода</li></ul></div>
+    <div class="card"><h3>Проверяющему</h3><ul><li>очередь на проверку</li><li>история: кто, когда, что</li><li>список несдавших и напоминание</li></ul></div>
+    <div class="card"><h3>Руководству</h3><ul><li>5 графиков</li><li>отклонения больше N %</li><li>рекомендации по сокращению</li></ul></div>
+    <div class="card"><h3>Администратору</h3><ul><li>новая организация без программиста</li><li>справочники и роли</li><li>QR-коды для печати</li></ul></div>
+  </div>
+</section>
+
+<!-- 5. Технология и MVP -->
+<section class="slide" data-n="5">
+  <div class="kicker">Технология и демо MVP</div>
+  <h2>Работающий MVP: PWA + API с проверкой ролей</h2>
+  <div class="grid" style="grid-template-columns: 250px 1fr; gap: 26px; margin-top: 14px">
+    <img class="shot" src="img/form.png" style="width:250px;height:500px;object-fit:cover;object-position:top" alt="Форма ввода">
+    <div>
+      <img class="shot" src="img/dashboard.png" style="width:100%;height:330px;object-fit:cover;object-position:top left" alt="Dashboard">
+      <div class="grid g3" style="margin-top:16px;gap:14px">
+        <div class="card" style="padding:14px"><h3 style="font-size:16px">Стек</h3><p style="font-size:14px">PWA (HTML/CSS/JS, офлайн) + облако Supabase (PostgreSQL): смартфон и ноутбук синхронизируются за ~4 с. Chart.js, SheetJS, QR, голосовой ввод</p></div>
+        <div class="card" style="padding:14px"><h3 style="font-size:16px">Безопасность</h3><p style="font-size:14px">Роли проверяются в слое API, пароли хранятся как солёный SHA-256; для пилота готова схема с RLS по ролям</p></div>
+        <div class="card" style="padding:14px"><h3 style="font-size:16px">Данные</h3><p style="font-size:14px">7 сущностей (ER в репозитории), ≈2 300 демо-записей, 5 организаций, июнь–ноябрь</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">✏️ Демо: https://ЛОГИН.github.io/РЕПОЗИТОРИЙ/ · логины: iskander@atu.kz / reviewer@atu.kz · пароль demo123</div>
+</section>
+
+<!-- 6. Как есть / как будет -->
+<section class="slide" data-n="6">
+  <div class="kicker">Бизнес-процесс</div>
+  <h2>«Как есть» → «как будет»: −86 % трудозатрат</h2>
+  <p class="sub">5 организаций, ≈440 взвешиваний в месяц</p>
+  <div style="font-weight:700;color:#7f1d1d;margin-bottom:8px">Как есть</div>
+  <div class="flow"><div class="step bad">Взвесил → записал в журнал<br>1,5 мин</div><div class="arrow">→</div><div class="step bad">Конец месяца: перенос в Excel<br>2 ч × 5</div><div class="arrow">→</div><div class="step bad">Отправка по почте, поиск ошибок<br>≈12 ч</div><div class="arrow">→</div><div class="step bad">Квартальный свод вручную<br>≈3 ч</div></div>
+  <div style="font-weight:700;color:#14532d;margin:18px 0 8px">Как будет</div>
+  <div class="flow"><div class="step">QR → плитка → вес<br>0,5 мин</div><div class="arrow">→</div><div class="step">Итоги и проверка — автоматически<br>0 ч</div><div class="arrow">→</div><div class="step">Принять или вернуть<br>15 мин × 5</div><div class="arrow">→</div><div class="step">Свод и Excel — 1 клик<br>≈0,2 ч</div></div>
+  <table style="margin-top:22px">
+    <tr><th>Часов в месяц</th><th class="num">Запись</th><th class="num">Перенос</th><th class="num">Сведение и проверка</th><th class="num">Отчёты</th><th class="num">Итого</th></tr>
+    <tr><td>Как есть</td><td class="num">11</td><td class="num">10</td><td class="num">12</td><td class="num">3</td><td class="num"><b>36</b></td></tr>
+    <tr class="tot"><td>Как будет</td><td class="num">3,7</td><td class="num">0</td><td class="num">1,3</td><td class="num">0,2</td><td class="num">5,2</td></tr>
+  </table>
+</section>
+
+<!-- 7. Бизнес-модель -->
+<section class="slide" data-n="7">
+  <div class="kicker">Бизнес-модель</div>
+  <h2>Пилот в АТУ, затем SaaS для вузов Казахстана</h2>
+  <div class="grid g3" style="margin-top:20px">
+    <div class="card"><h3>👥 Клиенты</h3><ul><li>Вузы и колледжи РК (кампусы, столовые, лаборатории)</li><li>Члены «Союза пищевых предприятий Казахстана»: кейтеринг, столовые, производства</li></ul></div>
+    <div class="card"><h3>💳 Монетизация</h3><ul><li>Подписка 300–500 тыс. ₸ в год за кампус (до 10 организаций)</li><li>Внедрение и обучение — разово</li><li>Модуль весов (Трек 2) и ESG-отчёт — опции</li></ul></div>
+    <div class="card"><h3>🎯 Ценность</h3><ul><li>Экономия часов и сырья</li><li>Данные для ESG, ЦУР 12.3 и требований законодательства РК</li><li>Прозрачность для руководства</li></ul></div>
+  </div>
+  <div class="grid g3" style="margin-top:20px">
+    <div class="card"><div class="big">1</div><p>кампус — пилот АТУ, 2026–2027</p></div>
+    <div class="card"><div class="big navy">15</div><p>вузов за 2 года через СППК и сеть вузов</p></div>
+    <div class="card"><div class="big orange">≈6 млн ₸</div><p>годовой выручки при 15 подписках</p></div>
+  </div>
+</section>
+
+<!-- 8. Экономический эффект -->
+<section class="slide" data-n="8">
+  <div class="kicker">Экономический эффект (пилот АТУ)</div>
+  <h2>Окупаемость ≈4 месяца</h2>
+  <div class="grid g2" style="margin-top:18px">
+    <div>
+      <table>
+        <tr><th>Эффект в год</th><th class="num">₸</th></tr>
+        <tr><td>Экономия труда: 370 ч × 2 500 ₸/ч</td><td class="num">920 000</td></tr>
+        <tr><td>Сырьё: −20 % нереализованной продукции (60 кг/мес × 1 500 ₸)</td><td class="num">1 080 000</td></tr>
+        <tr><td>OPEX: хостинг БД + 0,1 ставки сопровождения</td><td class="num">−516 000</td></tr>
+        <tr class="tot"><td>Чистый эффект</td><td class="num">≈1 500 000</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th>CAPEX (разово)</th><th class="num">₸</th></tr>
+        <tr><td>Облачная БД, перенос справочников</td><td class="num">150 000</td></tr>
+        <tr><td>2 планшета для кухонь (опционально)</td><td class="num">240 000</td></tr>
+        <tr><td>QR-коды, обучение 10 сотрудников</td><td class="num">60 000</td></tr>
+        <tr class="tot"><td>Итого CAPEX</td><td class="num">450 000</td></tr>
+      </table>
+      <div class="card" style="margin-top:18px"><p><b>Окупаемость:</b> 450 тыс. ₸ ÷ 1,5 млн ₸/год ≈ <b>3,6 мес.</b><br>Сам MVP (код) уже создан и бесплатен в хостинге.</p></div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:16px">Допущения команды: ставка 2 500 ₸/ч с налогами; себестоимость 1 500 ₸/кг; объём нереализованной продукции оценён по демо-данным, построенным по образцам таблиц АТУ. На пилоте их нужно уточнить.</p>
+</section>
+
+<!-- 9. Экологический эффект -->
+<section class="slide" data-n="9">
+  <div class="kicker">Экологический эффект · ЦУР 12.3 / 12.5</div>
+  <h2>−13 т отходов на полигон и ≈−9 т CO₂-экв. в год</h2>
+  <div class="grid g4" style="margin:20px 0">
+    <div class="card"><div class="big navy">≈30 т</div><p>пищевых отходов в год (5 организаций)</p></div>
+    <div class="card"><div class="big">43%</div><p>пригодно к переработке, а сейчас перерабатывается ≈3%</p></div>
+    <div class="card"><div class="big orange">≈21 т</div><p>CO₂-экв. в год сейчас</p></div>
+    <div class="card"><div class="big">≈53 тыс.</div><p>км пробега авто — эквивалент сокращения</p></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>Что даёт система</h3><ul><li>CO₂ по каждой записи с учётом способа утилизации</li><li>«Потенциал снижения»: сколько CO₂ уходит с пригодными отходами</li><li>Рекомендации: картон — в макулатуру, очистки и кофейный жмых — в компост, масло — на биотопливо</li></ul></div>
+    <div class="card"><h3>Методика</h3><p>Коэффициенты UK DESNZ/DEFRA GHG Conversion Factors 2024 (Waste disposal): пищевые на полигоне ≈0,70 кг CO₂-экв./кг, картон ≈1,04, переработка или компост ≈0,01. Коэффициенты редактируются в справочнике.</p></div>
+  </div>
+</section>
+
+<!-- 10. План внедрения -->
+<section class="slide" data-n="10">
+  <div class="kicker">План внедрения</div>
+  <h2>От одной столовой — ко всем вузам</h2>
+  <div class="timeline">
+    <div class="tl"><div class="when">Сегодня</div><b>MVP</b><p>Полный цикл, 5 организаций, демо-данные</p></div>
+    <div class="tl"><div class="when">1–2 мес</div><b>Пилот</b><p>Столовая «Искандер»: облачная БД, QR на кухне, обучение</p></div>
+    <div class="tl"><div class="when">3–6 мес</div><b>Весь АТУ</b><p>5 организаций, буфеты, лаборатории; Telegram-напоминания; импорт Excel</p></div>
+    <div class="tl"><div class="when">6–9 мес</div><b>Весы и ИИ</b><p>API для электронных весов (Трек 2), распознавание отхода по фото</p></div>
+    <div class="tl"><div class="when">9–24 мес</div><b>Другие вузы</b><p>SaaS и мультиарендность, продажи через СППК</p></div>
+  </div>
+  <div class="grid g3" style="margin-top:24px">
+    <div class="card"><h3>Ресурсы</h3><p>1 разработчик на пилоте, ответственный проверяющий от АТУ, 0,1 ставки сопровождения</p></div>
+    <div class="card"><h3>Риски</h3><p>Сопротивление персонала; неполные данные; нет интернета на кухне</p></div>
+    <div class="card"><h3>Меры</h3><p>3 касания и голосовой ввод; контроль несдавших и сроков; офлайн-режим PWA</p></div>
+  </div>
+</section>
+
+<!-- 11. Команда и запрос -->
+<section class="slide title" data-n="11">
+  <div class="kicker" style="margin-top:20px">Команда и запрос</div>
+  <h1 style="margin-top:6px;font-size:52px">Готовы к пилоту в АТУ</h1>
+  <div class="grid g2" style="margin-top:22px;gap:28px">
+    <div style="font-size:20px;line-height:1.7;color:#dbe3ff">
+      ✏️ <b>ФИО 1</b> — капитан, продукт и презентация<br>
+      ✏️ <b>ФИО 2</b> — разработка<br>
+      ✏️ <b>ФИО 3</b> — аналитика, экономика, экология
+    </div>
+    <div style="font-size:20px;line-height:1.6;color:#fff">
+      <b>Наш запрос:</b>
+      <ul style="margin:8px 0 0;padding-left:22px;color:#dbe3ff">
+        <li>Пилот в столовой «Искандер» на 2 месяца</li>
+        <li>Ответственный проверяющий от АТУ</li>
+        <li>Доступ к реальным таблицам учёта</li>
+        <li>Партнёр по электронным весам (Трек 2)</li>
+      </ul>
+    </div>
+  </div>
+  <div class="meta">✏️ Демо: https://ЛОГИН.github.io/РЕПОЗИТОРИЙ/ · Код: https://github.com/ЛОГИН/РЕПОЗИТОРИЙ<br>Логины: iskander@atu.kz · reviewer@atu.kz · admin@atu.kz — пароль demo123</div>
+</section>
+
+</body>
+</html>
