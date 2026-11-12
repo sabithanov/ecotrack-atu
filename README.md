@@ -27,7 +27,7 @@ EcoTrack ATU заменяет бумажные таблицы учёта пищ�
 | ФТ-5.1–5.5 Сведение и отчётность | единый реестр (фильтры: период, организация, вид отходов, способ утилизации), сводный отчёт за месяц, квартал или год, Excel (листы «Свод», «По видам», «Способы», «Не сдали» и журнал каждой организации по образцу таблицы АТУ), печать в PDF, список несдавших |
 | ФТ-6.1–6.5 Аналитика | 5 графиков (динамика, структура, сравнение организаций, способы утилизации, доля переработки и CO₂), сравнение месяц к месяцу и квартал к кварталу, доля пригодных к переработке, отклонения с настраиваемым порогом N %, CO₂-экв. с указанием источника, рекомендации |
 | Демо-данные | 5 организаций по образцам таблиц, июнь–ноябрь 2026 (5 закрытых месяцев и текущий), около 2 300 взвешиваний |
-| НФТ-7 Язык | русский и казахский (кнопка «ҚАЗ / РУС») |
+| НФТ-7 Язык | казахский, русский и английский (переключатель «ҚАЗ / РУС / ENG»); голосовой ввод тоже понимает все три языка |
 | PWA | установка на телефон, офлайн-работа (service worker) |
 
 ## Демо-логины (пароль у всех: `demo123`)
@@ -119,14 +119,19 @@ powershell -ExecutionPolicy Bypass -File serve.ps1
 * ER-диаграмма, процессы «как есть / как будет», формулы расчётов: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 * Экономика и экология: [docs/ECONOMICS.md](docs/ECONOMICS.md).
 * Пример сводного отчёта за квартал по всем организациям (выгружен из системы): [docs/Сводный_отчёт_3_квартал_2026.xlsx](docs/Сводный_отчёт_3_квартал_2026.xlsx).
-* Финальная презентация, 12 слайдов: [presentation/EcoTrack_ATU_presentation.pdf](presentation/EcoTrack_ATU_presentation.pdf) (исходник — `presentation/index.html`, печать в PDF из Chrome: поля «Нет», фон «Вкл»).
-* Приложение к презентации «Экраны системы»: 14 слайдов со скриншотами, что видит и какую информацию получает каждая роль — [presentation/EcoTrack_ATU_screens.pdf](presentation/EcoTrack_ATU_screens.pdf).
-* Все слайды в PNG, чтобы вставить в PowerPoint или Google Slides: `presentation/slides-png/`.
+* Финальная презентация, 12 слайдов:
+  * на русском — [presentation/EcoTrack_ATU_presentation.pdf](presentation/EcoTrack_ATU_presentation.pdf) (исходник `presentation/index.html`);
+  * на казахском — [presentation/EcoTrack_ATU_presentation_KZ.pdf](presentation/EcoTrack_ATU_presentation_KZ.pdf) (исходник `presentation/index-kk.html`).
+* Приложение «Экраны системы», 14 слайдов со скриншотами: что видит и какую информацию получает каждая роль.
+  * на русском — [presentation/EcoTrack_ATU_screens.pdf](presentation/EcoTrack_ATU_screens.pdf);
+  * на казахском, со скриншотами казахского интерфейса — [presentation/EcoTrack_ATU_screens_KZ.pdf](presentation/EcoTrack_ATU_screens_KZ.pdf).
+* Все слайды в PNG, чтобы вставить в PowerPoint или Google Slides: `presentation/slides-png/` (`main-ru-*`, `main-kk-*`, `screens-ru-*`, `screens-kk-*`).
 
 ```
 index.html            точка входа, подключение библиотек
 css/app.css           стили (адаптив ≥ 360 px, печать в PDF)
-js/i18n.js            словарь RU → KK
+js/i18n.js            словарь RU → KK (казахский)
+js/i18n-en.js         словарь RU → EN (английский)
 js/sha256.js          хэширование паролей
 js/seed.js            генератор демо-данных по образцам таблиц АТУ
 js/config.js          адрес и публичный ключ Supabase (пусто = локальный режим)

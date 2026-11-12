@@ -11,18 +11,21 @@
     'пятьдесят': 50, 'шестьдесят': 60, 'семьдесят': 70, 'восемьдесят': 80, 'девяносто': 90, 'сто': 100, 'двести': 200, 'триста': 300,
     'четыреста': 400, 'пятьсот': 500,
     'нөл': 0, 'бір': 1, 'екі': 2, 'үш': 3, 'төрт': 4, 'бес': 5, 'алты': 6, 'жеті': 7, 'сегіз': 8, 'тоғыз': 9, 'он': 10, 'жиырма': 20,
-    'отыз': 30, 'қырық': 40, 'елу': 50, 'алпыс': 60, 'жетпіс': 70, 'сексен': 80, 'тоқсан': 90, 'жүз': 100
+    'отыз': 30, 'қырық': 40, 'елу': 50, 'алпыс': 60, 'жетпіс': 70, 'сексен': 80, 'тоқсан': 90, 'жүз': 100,
+    'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10, 'eleven': 11, 'twelve': 12,
+    'thirteen': 13, 'fourteen': 14, 'fifteen': 15, 'sixteen': 16, 'seventeen': 17, 'eighteen': 18, 'nineteen': 19, 'twenty': 20, 'thirty': 30, 'forty': 40,
+    'fifty': 50, 'sixty': 60, 'seventy': 70, 'eighty': 80, 'ninety': 90, 'hundred': 100
   };
-  var SPECIAL = { 'полтора': 1.5, 'полторы': 1.5, 'половина': 0.5, 'пол': 0.5, 'жарты': 0.5 };
-  var DEC_SEP = { 'и': 1, 'запятая': 1, 'точка': 1, 'целых': 1, 'бүтін': 1, 'үтір': 1 };
+  var SPECIAL = { 'полтора': 1.5, 'полторы': 1.5, 'половина': 0.5, 'пол': 0.5, 'жарты': 0.5, 'half': 0.5 };
+  var DEC_SEP = { 'и': 1, 'запятая': 1, 'точка': 1, 'целых': 1, 'бүтін': 1, 'үтір': 1, 'point': 1 };
   var SKIP_AFTER = /^(десят|сот|тысячн)/;
   function unitOf(w) {
-    if (/^(кг|кило|килограмм|килограм|кілограмм|келі|кгр)/.test(w)) return 'kg';
-    if (/^(л|литр|литра|литров|литрах|литрі)$/.test(w) || /^литр/.test(w)) return 'l';
-    if (/^(г|гр|грамм|грам|граммов|грамма)$/.test(w)) return 'g';
+    if (/^(кг|кило|килограмм|килограм|кілограмм|келі|кгр|kg|kilo)/.test(w)) return 'kg';
+    if (/^(л|литр|литра|литров|литрах|литрі|l|liter|liters|litre|litres)$/.test(w) || /^литр/.test(w)) return 'l';
+    if (/^(г|гр|грамм|грам|граммов|грамма|g|gram|grams|gramme|grammes)$/.test(w)) return 'g';
     return null;
   }
-  var SEP = /^(и|еще|ещё|плюс|также|потом|тағы|және|сосын|а)$/;
+  var SEP = /^(и|еще|ещё|плюс|также|потом|тағы|және|сосын|а|and|plus|also|then)$/;
 
   /* синонимы: что говорят → какому виду отхода это соответствует */
   var ALIASES = [
@@ -33,16 +36,20 @@
     [/хлеб| нан |выпеч|булк|батон/, /хлеб/], [/кондит|торт|пирож|печень|печен|конфет/, /кондит/],
     [/яйц|скорлуп|жұмыртқа/, /скорлуп/], [/сахар|қант/, /сахар/], [/пэт|пластик|бутыл| пет /, /пэт/],
     [/стекл|шыны/, /стекл/], [/алюмин|банк|жестян/, /алюмин/], [/фрукт|жеміс|яблок/, /фрукт/],
-    [/упаков|пакет|пленк|қаптама/, /упаков/], [/ еда | еды |тамақ/, /еды/]
+    [/упаков|пакет|пленк|қаптама/, /упаков/], [/ еда | еды |тамақ/, /еды/],
+    [/peel/, /очист/], [/cardboard|carton|box/, /картон/], [/ oil |cooking oil|frying/, /масл/], [/coffee|grounds/, /жмых/],
+    [/plate|leftover|dining/, /зал/], [/unsold|surplus/, /нереализ/], [/bone/, /кост/], [/fish/, /рыб/], [/meat|trim/, /мяс/],
+    [/bread|bakery/, /хлеб/], [/pastry|cake|confection/, /кондит/], [/egg|shell/, /скорлуп/], [/sugar/, /сахар/], [/plastic|bottle| pet /, /пэт/],
+    [/glass/, /стекл/], [/alumin| can /, /алюмин/], [/fruit/, /фрукт/], [/vegetable/, /овощ/], [/packag|wrap/, /упаков/], [/ food /, /еды/]
   ];
   var GENERIC = { 'отход': 1, 'остат': 1, 'пищев': 1, 'издел': 1, 'образ': 1, 'кафед': 1 };
   var METHOD_RULES = [
-    [/компост/, function (m) { return m.mode === 'compost'; }],
-    [/корм|животн|мал азы/, function (m) { return m.mode === 'feed'; }],
-    [/биотоп|биодиз/, function (m) { return /масл/i.test(m.name); }],
-    [/переработ|вторсыр|макулат|қайта өңде|сдать|сдали/, function (m) { return m.mode === 'recycle' && !/масл/i.test(m.name); }],
-    [/бак|контейнер/, function (m) { return /бак/i.test(m.name); }],
-    [/тбо|вывоз|мусор|полигон/, function (m) { return m.mode === 'landfill' && !/бак/i.test(m.name); }]
+    [/компост|compost/, function (m) { return m.mode === 'compost'; }],
+    [/корм|животн|мал азы|feed|animal/, function (m) { return m.mode === 'feed'; }],
+    [/биотоп|биодиз|biofuel|biodiesel/, function (m) { return /масл/i.test(m.name); }],
+    [/переработ|вторсыр|макулат|қайта өңде|сдать|сдали|recycl/, function (m) { return m.mode === 'recycle' && !/масл/i.test(m.name); }],
+    [/бак|контейнер|bin|container/, function (m) { return /бак/i.test(m.name); }],
+    [/тбо|вывоз|мусор|полигон|landfill|trash/, function (m) { return m.mode === 'landfill' && !/бак/i.test(m.name); }]
   ];
 
   function norm(s) {
@@ -78,6 +85,7 @@
     // «с половиной», «жарым»
     if (t[j] === 'с' && /^половин/.test(t[j + 1] || '')) { v += 0.5; j += 2; }
     if (t[j] === 'жарым') { v += 0.5; j++; }
+    if (t[j] === 'and' && t[j + 1] === 'a' && t[j + 2] === 'half') { v += 0.5; j += 3; }
     // «пол» без единицы — не число
     if (w === 'пол' && !unitOf(t[j] || '')) return null;
     var unit = null;
@@ -110,7 +118,7 @@
     for (var i = 0; i < METHOD_RULES.length; i++) {
       if (METHOD_RULES[i][0].test(text)) {
         var pred = METHOD_RULES[i][1];
-        if (/переработ|вторсыр|сдать|сдали/.test(text) && type && type.category === 'oil') pred = function (m) { return /масл/i.test(m.name); };
+        if (/переработ|вторсыр|сдать|сдали|recycl/.test(text) && type && type.category === 'oil') pred = function (m) { return /масл/i.test(m.name); };
         var m = methods.filter(pred)[0];
         if (m) return m;
       }
@@ -163,13 +171,13 @@
     open: function (ctx) {
       var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
       var items = [], rec = null, listening = false, baseText = '';
-      var lang = I18N.lang === 'kk' ? 'kk-KZ' : 'ru-RU';
+      var lang = I18N.lang === 'kk' ? 'kk-KZ' : I18N.lang === 'en' ? 'en-US' : 'ru-RU';
       var body = document.createElement('div');
       body.className = 'voice';
       body.innerHTML =
         '<div class="voice-top"><button type="button" class="mic-btn" id="v-mic" aria-label="mic">🎤</button>' +
         '<div class="voice-status"><b id="v-status"></b><div class="small muted">' + esc(t('Можно назвать несколько видов сразу: «очистки овощей 12 с половиной кило, картон 5 на переработку, масло 3 литра»')) + '</div></div>' +
-        '<select id="v-lang" class="chip" title="' + esc(t('Язык распознавания')) + '"><option value="ru-RU"' + (lang === 'ru-RU' ? ' selected' : '') + '>RU</option><option value="kk-KZ"' + (lang === 'kk-KZ' ? ' selected' : '') + '>KZ</option></select></div>' +
+        '<select id="v-lang" class="chip" title="' + esc(t('Язык распознавания')) + '"><option value="ru-RU"' + (lang === 'ru-RU' ? ' selected' : '') + '>RU</option><option value="kk-KZ"' + (lang === 'kk-KZ' ? ' selected' : '') + '>KZ</option><option value="en-US"' + (lang === 'en-US' ? ' selected' : '') + '>EN</option></select></div>' +
         '<label class="field"><span>' + esc(t('Распознанный текст (можно исправить или ввести вручную)')) + '</span><textarea id="v-text" rows="2"></textarea></label>' +
         '<div id="v-items"></div>';
       var modal = openModal({

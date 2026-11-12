@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EcoTrack ATU — жүйе экрандары</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  :root { --navy: #13235b; --green: #1f8a4c; --green2: #2fb766; --soft: #e9f6ee; --muted: #5b6b7f; --text: #14213d; --line: #dde5e0; --orange: #e08a00; --red: #c0352b; --blue: #1d4ed8; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #d9dee3; color: var(--text); font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+  .slide { width: 1280px; height: 720px; margin: 20px auto; background: #fff; position: relative; overflow: hidden; padding: 44px 56px 40px; page-break-after: always; break-after: page; box-shadow: 0 4px 24px rgba(0,0,0,.12); display: grid; grid-template-columns: 430px 1fr; gap: 36px; }
+  @media print { html, body { background: #fff; } .slide { margin: 0; box-shadow: none; } }
+  .slide::after { content: attr(data-n); position: absolute; right: 30px; bottom: 16px; font-size: 13px; color: #9aa7b6; }
+  .kicker { font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--green); margin-bottom: 8px; }
+  h2 { font-size: 32px; line-height: 1.15; margin: 0 0 6px; color: var(--navy); letter-spacing: -.015em; }
+  .kz { font-size: 16px; color: #64748b; margin: 0 0 18px; font-style: italic; }
+  .info-title { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 6px 0 8px; }
+  ul.info { margin: 0; padding: 0; list-style: none; }
+  ul.info li { position: relative; padding: 0 0 9px 26px; font-size: 16.5px; line-height: 1.38; color: #1e293b; }
+  ul.info li::before { content: '✓'; position: absolute; left: 0; top: 0; width: 18px; height: 18px; border-radius: 50%; background: var(--soft); color: var(--green); font-weight: 900; font-size: 12px; display: grid; place-items: center; margin-top: 2px; }
+  .who { display: inline-block; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: #eef2ff; color: #3730a3; margin: 0 6px 10px 0; }
+  .note { margin-top: 10px; font-size: 14px; color: var(--muted); background: #f8faf9; border-left: 4px solid var(--green); padding: 9px 12px; border-radius: 6px; line-height: 1.4; }
+  .shots { display: flex; gap: 22px; align-items: center; justify-content: center; min-width: 0; }
+  .phone { width: 300px; height: 600px; border-radius: 30px; border: 10px solid #0f172a; overflow: hidden; background: #fff; box-shadow: 0 16px 40px rgba(15,23,42,.25); flex: 0 0 auto; }
+  .phone img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+  .phone.sm { width: 250px; height: 500px; }
+  .desk { width: 100%; border-radius: 12px; border: 1px solid #cbd5e1; overflow: hidden; box-shadow: 0 16px 40px rgba(15,23,42,.18); background: #fff; }
+  .desk .bar { height: 26px; background: #e2e8f0; display: flex; align-items: center; gap: 6px; padding: 0 10px; }
+  .desk .bar i { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; display: block; }
+  .desk .bar span { margin-left: 10px; font-size: 11px; color: #64748b; }
+  .desk img { width: 100%; display: block; }
+  .stack { display: flex; flex-direction: column; gap: 16px; width: 100%; }
+  .row { display: flex; gap: 18px; align-items: flex-start; }
+  /* title */
+  .title { display: block; background: radial-gradient(900px 500px at 0% 0%, #1f8a4c40, transparent 60%), radial-gradient(900px 600px at 100% 100%, #2563eb30, transparent 60%), var(--navy); color: #fff; padding: 64px 72px; }
+  .title h1 { font-size: 58px; margin: 18px 0 10px; letter-spacing: -.02em; }
+  .title p { font-size: 22px; color: #c7d2fe; max-width: 720px; margin: 0 0 8px; line-height: 1.4; }
+  .title .kicker { color: var(--green2); }
+  .title .qr { position: absolute; right: 72px; top: 150px; background: #fff; padding: 14px; border-radius: 16px; text-align: center; color: var(--navy); width: 260px; }
+  .title .qr div svg { width: 232px; height: 232px; display: block; }
+  .title .qr b { display: block; font-size: 14px; margin-top: 6px; }
+  .title .qr small { font-size: 12px; color: #475569; }
+  .title .roles { position: absolute; left: 72px; bottom: 60px; display: flex; gap: 10px; flex-wrap: wrap; max-width: 760px; }
+  .title .roles span { border: 1px solid #ffffff55; border-radius: 999px; padding: 7px 14px; font-size: 15px; }
+  .title::after { color: #ffffff66; }
+  .matrix { display: block; }
+  .matrix table { width: 100%; border-collapse: collapse; font-size: 15px; margin-top: 10px; }
+  .matrix th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); border-bottom: 2px solid var(--line); padding: 8px 10px; }
+  .matrix td { padding: 8px 10px; border-bottom: 1px solid #edf1ee; vertical-align: top; }
+  .matrix td:first-child { font-weight: 700; color: var(--navy); width: 210px; }
+  .y { color: var(--green); font-weight: 800; text-align: center; }
+  .n { color: #cbd5e1; text-align: center; }
+</style>
+</head>
+<body>
+
+<section class="slide title" data-n="1">
+  <div class="kicker">Презентацияға қосымша</div>
+  <h1>EcoTrack ATU:<br>жүйе қалай жұмыс істейді</h1>
+  <p>Жүйенің экрандары және әр рөл алатын ақпарат: ас үйдегі өлшеуден тоқсандық есеп пен CO₂-ге дейін.</p>
+  <div class="qr"><div id="qr1"></div><b>sabithanov.github.io/ecotrack-atu</b><small>логиндер кіру бетінде · құпиясөз demo123</small></div>
+  <div class="roles"><span>📱 Жауапты тұлға</span><span>✅ Тексеруші</span><span>⚙ Әкімші</span><span>📊 Басшылық</span></div>
+</section>
+
+<section class="slide" data-n="2">
+  <div>
+    <div class="kicker">Кіру және рөлдер</div>
+    <h2>Бір сайт — төрт рөл</h2>
+    <div class="info-title">Не береді</div>
+    <ul class="info">
+      <li>E-mail және құпиясөз арқылы кіру (құпиясөздер тек хэш түрінде сақталады)</li>
+      <li>Әр рөл тек өзіне тиесілісін көреді: аспаз — өз ас үйінің нысанын, тексеруші — барлық есептерді, басшылық — аналитиканы</li>
+      <li>Құқықтар әр әрекетте тексеріледі, батырмаларды жасырумен шектелмейді</li>
+      <li>Рөлді таңдап жылдам кіру; интерфейс <b>ҚАЗ / РУС / ENG</b></li>
+      <li>📲 «Қосымша» — телефонға кәдімгі қосымша сияқты орнату</li>
+    </ul>
+  </div>
+  <div class="shots"><div class="phone"><img src="img/screens-kk/login.png" alt=""></div></div>
+</section>
+
+<section class="slide" data-n="3">
+  <div>
+    <div class="kicker">Смартфоннан енгізу</div>
+    <h2>Ас үйде 3 рет басып жазу</h2>
+    <span class="who">📱 Жауапты тұлға</span>
+    <div class="info-title">Қандай ақпарат тіркеледі</div>
+    <ul class="info">
+      <li>Күні, қалдық түрі, салмағы (кг) немесе көлемі (л), кәдеге жарату тәсілі, жауапты тұлға — АТУ-дың қағаз кестесіндегідей</li>
+      <li>Әр түр бойынша <b>күндік және айлық</b> жиын бірден есептеледі</li>
+      <li>Тексеру: салмақ &gt; 0, ақылға қонымды шек, күн болашақта емес, қайталану туралы ескерту</li>
+      <li>Қалдық фотосы, ескертпе, бағдарламашысыз «＋ Жаңа қалдық түрі»</li>
+      <li>Жоба жоғалмайды, есеп тапсыру мерзімі әрдайым экранда</li>
+    </ul>
+  </div>
+  <div class="shots"><div class="phone sm"><img src="img/screens-kk/form.png" alt=""></div><div class="phone sm"><img src="img/screens-kk/entry.png" alt=""></div></div>
+</section>
+
+<section class="slide" data-n="4">
+  <div>
+    <div class="kicker">Дауыспен енгізу · ЖИ</div>
+    <h2>Бір сөйлем — бірнеше жазба</h2>
+    <span class="who">📱 Жауапты тұлға</span>
+    <div class="info-title">Қалай жұмыс істейді</div>
+    <ul class="info">
+      <li>«Көкөніс қабығы он екі жарым килограмм, картон бес қайта өңдеуге және май үш литр» → <b>3 жазба</b></li>
+      <li>Сандарды цифрмен де, сөзбен де түсінеді (қаз., орыс., ағылш.): «жарым», «полтора», «и пять», грамм</li>
+      <li>Синонимдер: «қорап» → картон ыдыс, «тәрелкеден» → залдан келген қалдық, «кофе» → кофе қалдығы</li>
+      <li>Кәдеге жарату тәсілі сөйлемнен алынады: «компостқа», «қайта өңдеуге»</li>
+      <li>Сақтамас бұрын бәрі көрінеді және түзетуге болады; ас үйде қол бос</li>
+    </ul>
+  </div>
+  <div class="shots"><div class="phone"><img src="img/screens-kk/voice.png" alt=""></div></div>
+</section>
+
+<section class="slide" data-n="5">
+  <div>
+    <div class="kicker">Жіберу және тексеру</div>
+    <h2>Айлық есеп — бір әрекетпен</h2>
+    <span class="who">📱 Жауапты тұлға</span><span class="who">✅ Тексеруші</span>
+    <div class="info-title">Не көрінеді</div>
+    <ul class="info">
+      <li>Мәртебелер: жоба → жіберілді → тексерілуде → <b>қабылданды</b> / <b>қайтарылды</b></li>
+      <li>Тексеруші түрлер бойынша жиынды, салмақты, қайта өңдеу үлесін, CO₂-ні және АТУ үлгісіндегі журналды көреді</li>
+      <li>Қайтару — тек түсініктемемен; аспаз нені түзету керегін бірден көреді</li>
+      <li>Қабылданған есеп бұғатталып, бірыңғай тізілімге түседі</li>
+    </ul>
+  </div>
+  <div class="shots" style="align-items:flex-start"><div class="phone sm"><img src="img/screens-kk/returned.png" alt=""></div>
+    <div class="desk" style="width:440px;margin-top:40px"><div class="bar"><i></i><i></i><i></i><span>Есепті тексеру</span></div><img src="img/screens-kk/review.png" alt=""></div></div>
+</section>
+
+<section class="slide" data-n="6">
+  <div>
+    <div class="kicker">Өзгерістер тарихы</div>
+    <h2>Кім, қашан, не істеді және неге</h2>
+    <span class="who">✅ Тексеруші</span><span class="who">📊 Басшылық</span>
+    <div class="info-title">Не береді</div>
+    <ul class="info">
+      <li>Мәртебенің әр өзгерісі — авторымен, уақытымен және түсініктемесімен</li>
+      <li>Жазбаларды түзету «болды → болды» түрінде сақталады</li>
+      <li>Аудит пен ESG-есептілік үшін ашықтық</li>
+      <li>Тапсыру мерзімі және кешігуді бақылау</li>
+    </ul>
+  </div>
+  <div class="shots"><div class="desk"><div class="bar"><i></i><i></i><i></i><span>Есеп тарихы</span></div><img src="img/screens-kk/history.png" alt=""></div></div>
+</section>
+
+<section class="slide" data-n="7">
+  <div>
+    <div class="kicker">Бірыңғай тізілім</div>
+    <h2>Барлық қабылданған деректер бір жерде</h2>
+    <span class="who">✅ Тексеруші</span><span class="who">📊 Басшылық</span>
+    <div class="info-title">Қандай ақпарат аламыз</div>
+    <ul class="info">
+      <li>Сүзгілер: кезең, ұйым, қалдық түрі, кәдеге жарату тәсілі</li>
+      <li>Таңдау бойынша жиын: жазбалар саны, салмақ, қайта өңдеуге жарамды үлес, CO₂-экв.</li>
+      <li>Бір батырмамен Excel-ге жүктеу</li>
+      <li>Тізілімге тек <b>қабылданған</b> есептер түседі — деректер тексерілген</li>
+    </ul>
+  </div>
+  <div class="shots"><div class="desk"><div class="bar"><i></i><i></i><i></i><span>Тізілім</span></div><img src="img/screens-kk/registry.png" alt=""></div></div>
+</section>
+
+<section class="slide" data-n="8">
+  <div>
+    <div class="kicker">Дашборд</div>
+    <h2>Университет бойынша жағдай бір минутта</h2>
+    <span class="who">📊 Басшылық</span><span class="who">✅ Тексеруші</span>
+    <div class="info-title">Айдың негізгі көрсеткіштері</div>
+    <ul class="info">
+      <li>Қалдық салмағы және өткен аймен салыстырғандағы өзгерісі</li>
+      <li>Қайта өңдеуге жарамдысы және <b>нақты</b> қаншасы өңделді</li>
+      <li>CO₂-эквиваленті және оны азайту әлеуеті</li>
+      <li>Қанша ұйым есеп тапсырды</li>
+      <li>Айлық динамика және әр ұйымның үлесі</li>
+    </ul>
+  </div>
+  <div class="shots"><div class="desk"><div class="bar"><i></i><i></i><i></i><span>Дашборд</span></div><img src="img/screens-kk/dashboard.png" alt=""></div></div>
+</section>
+
+<section class="slide" data-n="9">
+  <div>
+    <div class="kicker">Аналитика</div>
+    <h2>Құрылым, салыстыру, кәдеге жарату тәсілдері</h2>
+    <span class="who">📊 Басшылық</span>
+    <div class="info-title">Графиктер</div>
+    <ul class="info">
+      <li>Қалдық түрлері бойынша құрылым: негізгі шығын қайда</li>
+      <li>Ұйымдарды салыстыру: айдан айға</li>
+      <li>Кәдеге жарату тәсілдері: полигонға қанша кетеді</li>
+      <li>Айлар бойынша қайта өңдеу үлесі және CO₂: әсер өсіп жатыр ма</li>
+      <li>«Айдан айға» және «тоқсаннан тоқсанға» кестесі</li>
+    </ul>
+  </div>
+  <div class="shots"><div class="desk"><div class="bar"><i></i><i></i><i></i><span>Дашборд · графиктер</span></div><img src="img/screens-kk/dashboard2.png" alt=""></div></div>
+</section>
+
+<section class="slide" data-n="10">
+  <div>
+    <div class="kicker">Ауытқулар және ұсыныстар</div>
+    <h2>Ақша қай жерде жоғалатынын жүйе өзі көрсетеді</h2>
+    <span class="who">📊 Басшылық</span><span class="who">📱 Ұйымдар</span>
+    <div class="info-title">Не береді</div>
+    <ul class="info">
+      <li>N %-дан асқан ауытқулар: мысалы, қазанда «сатылмаған өнім қалдықтары» <b>+66 %</b></li>
+      <li>Ұсыныстар: өндіріс көлемі, порциялар, картонды бөлек жинау, компост</li>
+      <li>Теңгедегі үнем және CO₂ азаюы цифрмен</li>
+      <li>ТДМ 12.3 және ESG үшін жыл басынан бергі экокөрсеткіштер</li>
+    </ul>
+  </div>
+  <div class="shots"><div class="desk"><div class="bar"><i></i><i></i><i></i><span>Ауытқулар · ұсыныстар · экокөрсеткіштер</span></div><img src="img/screens-kk/anomalies.png" alt=""></div></div>
+</section>
+
+<section class="slide" data-n="11">
+  <div>
+    <div class="kicker">Жиынтық есеп және тапсыруды бақылау</div>
+    <h2>Тоқсандық есеп бір батырмамен</h2>
+    <span class="who">✅ Тексеруші</span><span class="who">📊 Басшылық</span>
+    <div class="info-title">Қандай ақпарат аламыз</div>
+    <ul class="info">
+      <li>Ұйымдар мен қалдық түрлері бойынша ай, тоқсан немесе жыл</li>
+      <li>АТУ кестелерінің құрылымындағы Excel: «Свод», «По видам», «Способы», «Не сдали», әр ұйымның журналы; PDF-ке басып шығару</li>
+      <li><b>Кім есеп тапсырмады</b> және ол қандай мәртебеде; «Еске салу» батырмасы</li>
+    </ul>
+  </div>
+  <div class="shots"><div class="desk"><div class="bar"><i></i><i></i><i></i><span>Жиынтық есеп · тапсыруды бақылау</span></div><img src="img/screens-kk/nonsub.png" alt=""></div></div>
+</section>
+
+<section class="slide" data-n="12">
+  <div>
+    <div class="kicker">Анықтамалықтар және QR-кодтар</div>
+    <h2>Жаңа ұйым — бағдарламашысыз</h2>
+    <span class="who">⚙ Әкімші</span>
+    <div class="info-title">Нені баптауға болады</div>
+    <ul class="info">
+      <li>Ұйымдар: түрі, корпусы, жауаптылары; жаңа буфеттер мен кафедраларды дайын нысан үлгісімен қосу</li>
+      <li>Пайдаланушылар және рөлдер</li>
+      <li>Қалдық түрлері: өлшем бірлігі, санаты, қайта өңдеуге жарамдылығы, CO₂ коэффициенті, шегі; жоюдың орнына өшіру</li>
+      <li>Әр ас үйге <b>QR-код</b>: сканерледі — нысан ашылды</li>
+    </ul>
+  </div>
+  <div class="shots"><div class="desk"><div class="bar"><i></i><i></i><i></i><span>Ұйымдардың QR-кодтары</span></div><img src="img/screens-kk/qr.png" alt=""></div></div>
+</section>
+
+<section class="slide" data-n="13">
+  <div>
+    <div class="kicker">Қосымша · бұлт · үш тіл</div>
+    <h2>Кез келген телефонда қосымша сияқты жұмыс істейді</h2>
+    <div class="info-title">Не береді</div>
+    <ul class="info">
+      <li>📲 Android мен iPhone-ға орнату: экранда белгіше, толық экран, App Store-сыз</li>
+      <li>☁ Supabase бұлты: аспаздың телефоны мен тексерушінің ноутбугы бір деректерді көреді (~4 с)</li>
+      <li>Офлайн: желі болмаса, жазбалар сақталып, кейін жіберіледі</li>
+      <li>Интерфейс қазақ, орыс және ағылшын тілдерінде</li>
+    </ul>
+  </div>
+  <div class="shots"><div class="phone sm"><img src="img/screens-kk/install.png" alt=""></div><div class="phone sm"><img src="img/screens-kk/respdash.png" alt=""></div></div>
+</section>
+
+<section class="slide matrix" data-n="14">
+  <div class="kicker">Қорытынды</div>
+  <h2>Әр рөл қандай ақпарат алады</h2>
+  <table>
+    <tr><th>Ақпарат</th><th>📱 Жауапты тұлға</th><th>✅ Тексеруші</th><th>⚙ Әкімші</th><th>📊 Басшылық</th></tr>
+    <tr><td>Күн мен ай жиыны</td><td class="y">өз ұйымы</td><td class="y">барлығы</td><td class="y">барлығы</td><td class="y">барлығы</td></tr>
+    <tr><td>Есеп мәртебесі және түсініктемелер</td><td class="y">✓</td><td class="y">✓ + шешім</td><td class="y">✓</td><td class="y">✓</td></tr>
+    <tr><td>Өзгерістер тарихы</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+    <tr><td>Сүзгілері бар бірыңғай тізілім</td><td class="n">—</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+    <tr><td>Жиынтық есеп және Excel / PDF</td><td class="n">—</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+    <tr><td>Дашборд: 5 график және KPI</td><td class="y">өз ұйымы</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+    <tr><td>Ауытқулар және ұсыныстар</td><td class="y">өз ұйымы</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+    <tr><td>CO₂ және экокөрсеткіштер</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+    <tr><td>Кім есеп тапсырмады</td><td class="y">өз мерзімі</td><td class="y">✓ + еске салу</td><td class="y">✓</td><td class="y">✓</td></tr>
+    <tr><td>Анықтамалықтар, пайдаланушылар, QR</td><td class="y">жаңа қалдық түрі</td><td class="y">қалдық түрлері, QR</td><td class="y">барлығы</td><td class="n">—</td></tr>
+  </table>
+</section>
+
+<script>
+  (function () { // ?n=5 — тек бір слайд (PNG экспорты үшін)
+    var n = +new URLSearchParams(location.search).get('n');
+    if (n) { document.body.style.background = '#fff'; document.querySelectorAll('.slide').forEach(function (s, i) { if (i + 1 !== n) s.remove(); else s.style.margin = '0'; }); }
+  })();
+  (function () {
+    if (!window.qrcode) return;
+    var q = qrcode(0, 'M'); q.addData('https://sabithanov.github.io/ecotrack-atu/'); q.make();
+    if (document.getElementById('qr1')) document.getElementById('qr1').innerHTML = q.createSvgTag({ cellSize: 6, margin: 1, scalable: true });
+  })();
+</script>
+</body>
+</html>

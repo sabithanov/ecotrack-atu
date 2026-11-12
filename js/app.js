@@ -24,12 +24,12 @@
       return '<a href="#/' + it[0] + '" class="nav-item' + (active === it[0] ? ' active' : '') + '"><span class="ni">' + it[1] + '</span><span>' + esc(t(it[2])) + '</span></a>';
     }).join('');
     return '<div class="layout">' +
-      '<aside class="sidebar"><div class="brand"><img src="assets/icon.svg" alt=""><div><b>EcoTrack</b><small>ATU · Smart Food</small></div></div>' +
+      '<aside class="sidebar"><div class="brand"><img src="assets/icon.svg" alt=""><div><b>EcoTrack</b><small>' + esc(t('Учёт пищевых отходов')) + '</small></div></div>' +
       '<nav>' + nav + '</nav>' +
-      '<div class="side-foot">' + esc(t('Трек 1 · хакатон Smart Food Industries')) + '</div></aside>' +
+      '<div class="side-foot">EcoTrack ATU v1.0<br>' + esc(t('АО «Алматинский технологический университет»')) + '</div></aside>' +
       '<div class="main"><header class="topbar">' +
       '<div class="tb-title"><img class="tb-logo" src="assets/icon.svg" alt=""><div><b>' + esc(user.name) + '</b><small>' + esc(t(ROLES[user.role])) + (org ? ' · ' + esc(org.short) : '') + '</small></div></div>' +
-      '<div class="tb-actions">' + syncChip() + installChip() + '<button class="chip" id="lang-btn" title="Тіл / Язык">' + (I18N.lang === 'ru' ? 'ҚАЗ' : 'РУС') + '</button>' +
+      '<div class="tb-actions">' + syncChip() + installChip() + langSelect() +
       '<button class="chip" id="logout-btn">' + esc(t('Выход')) + '</button></div></header>' +
       '<main id="view"></main></div>' +
       '<nav class="bottom-nav">' + nav + '</nav></div>';
@@ -42,6 +42,10 @@
     return '<span id="sync-ind" class="sync-ind ' + st + '" title="' + esc(S ? S.statusText() : '') + '">☁<span class="ic-label"> ' + esc(label) + '</span></span>';
   }
   window.syncChip = syncChip;
+  function langSelect() {
+    return '<select class="chip lang-sel" id="lang-btn" title="Язык / Тіл / Language" aria-label="Language">' +
+      [['ru', 'РУС'], ['kk', 'ҚАЗ'], ['en', 'ENG']].map(function (l) { return '<option value="' + l[0] + '"' + (I18N.lang === l[0] ? ' selected' : '') + '>' + l[1] + '</option>'; }).join('') + '</select>';
+  }
 
   /* ---------- Установка как приложение (PWA) ---------- */
   var installEvt = null;
@@ -73,7 +77,7 @@
     bindInstall();
     var si = $('#sync-ind');
     if (si) si.onclick = function () { toast(Sync.statusText()); if (Sync.enabled) Sync.tick(); };
-    $('#lang-btn').onclick = function () { I18N.set(I18N.lang === 'ru' ? 'kk' : 'ru'); route(); };
+    $('#lang-btn').onchange = function () { I18N.set(this.value); route(); };
     $('#logout-btn').onclick = function () { API.logout(); go('login'); };
   }
 
@@ -93,17 +97,17 @@
     $('#app').innerHTML =
       '<div class="login-page"><div class="login-card">' +
       '<div class="login-top"><img src="assets/icon.svg" alt=""><div><h1>EcoTrack ATU</h1><p>' + esc(t('Цифровая система управления пищевыми отходами университетского комплекса')) + '</p></div>' +
-      '<button class="chip" id="lang-btn">' + (I18N.lang === 'ru' ? 'ҚАЗ' : 'РУС') + '</button></div>' + orgHint +
+      langSelect() + '</div>' + orgHint +
       '<form id="login-form" autocomplete="on">' +
       '<label class="field"><span>E-mail</span><input type="email" name="email" required autocomplete="username" inputmode="email"></label>' +
       '<label class="field"><span>' + esc(t('Пароль')) + '</span><input type="password" name="password" required autocomplete="current-password"></label>' +
       '<button class="btn primary block" type="submit">' + esc(t('Войти')) + '</button></form>' +
-      '<div class="demo"><div class="demo-title">' + esc(t('Демо-доступы (пароль: demo123) — нажмите, чтобы войти')) + '</div><div class="demo-grid">' +
+      '<div class="demo"><div class="demo-title">' + esc(t('Быстрый вход — выберите роль (пароль demo123)')) + '</div><div class="demo-grid">' +
       demo.map(function (d) { return '<button class="demo-btn" data-email="' + d[0] + '"><b>' + esc(t(d[1])) + '</b><small>' + esc(d[2] ? t(d[2]) : d[0]) + '</small></button>'; }).join('') +
       '</div></div>' +
-      '<p class="login-foot">' + syncChip() + ' ' + installChip() + '<br>' + esc(t('Студенческий хакатон ATU «Smart Food Industries» · Трек 1')) + '</p>' +
+      '<p class="login-foot">' + syncChip() + ' ' + installChip() + '<br>© 2026 EcoTrack ATU · ' + esc(t('АО «Алматинский технологический университет»')) + '</p>' +
       '</div></div>';
-    $('#lang-btn').onclick = function () { I18N.set(I18N.lang === 'ru' ? 'kk' : 'ru'); renderLogin(q); };
+    $('#lang-btn').onchange = function () { I18N.set(this.value); renderLogin(q); };
     bindInstall();
     function doLogin(email, pw) {
       try {
@@ -138,7 +142,7 @@
     destroyCharts();
     var h = parseHash();
     var user = API.me();
-    document.documentElement.lang = I18N.lang === 'kk' ? 'kk' : 'ru';
+    document.documentElement.lang = I18N.lang;
     if (!user) {
       if (h.name && h.name !== 'login') sessionStorage.setItem('ecotrack_after_login', location.hash);
       if (h.name !== 'login') { history.replaceState(null, '', '#/login' + (h.q.org ? '?org=' + h.q.org : '')); }

@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EcoTrack ATU — презентация (қазақша)</title>
+<style>
+  /* ✏️ Перед печатью замените ссылки и имена команды (ищите «✏️») */
+  @page { size: 1280px 720px; margin: 0; }
+  :root { --navy: #13235b; --green: #1f8a4c; --green2: #2fb766; --soft: #e9f6ee; --muted: #5b6b7f; --text: #14213d; --line: #dde5e0; --orange: #e08a00; --red: #c0352b; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #d9dee3; color: var(--text); font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+  .slide { width: 1280px; height: 720px; margin: 20px auto; background: #fff; position: relative; overflow: hidden; padding: 56px 68px 48px; page-break-after: always; break-after: page; box-shadow: 0 4px 24px rgba(0,0,0,.12); }
+  @media print { html, body { background: #fff; } .slide { margin: 0; box-shadow: none; } }
+  .slide::after { content: attr(data-n); position: absolute; right: 36px; bottom: 22px; font-size: 14px; color: #9aa7b6; }
+  .foot { position: absolute; left: 68px; bottom: 22px; font-size: 13px; color: #9aa7b6; }
+  h1 { font-size: 46px; margin: 0 0 14px; letter-spacing: -.02em; }
+  h2 { font-size: 36px; margin: 0 0 6px; letter-spacing: -.015em; color: var(--navy); }
+  .sub { font-size: 19px; color: var(--muted); margin: 0 0 26px; }
+  .kicker { font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--green); margin-bottom: 8px; }
+  .grid { display: grid; gap: 20px; }
+  .g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: repeat(3, 1fr); } .g4 { grid-template-columns: repeat(4, 1fr); }
+  .card { border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; background: #fbfcfb; }
+  .card h3 { margin: 0 0 8px; font-size: 20px; color: var(--navy); }
+  .card p, .card li { font-size: 16px; line-height: 1.45; margin: 0; color: #334155; }
+  .card ul { margin: 0; padding-left: 18px; } .card li { margin-bottom: 5px; }
+  .big { font-size: 50px; font-weight: 800; color: var(--green); letter-spacing: -.02em; line-height: 1.05; }
+  .big.navy { color: var(--navy); } .big.orange { color: var(--orange); } .big.red { color: var(--red); }
+  .src { font-size: 12px; color: #94a3b8; margin-top: 6px; }
+  .pill { display: inline-block; padding: 5px 12px; border-radius: 999px; background: var(--soft); color: #166e3b; font-weight: 700; font-size: 14px; margin: 0 6px 6px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 16px; }
+  th { text-align: left; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); border-bottom: 2px solid var(--line); padding: 8px 10px; }
+  td { padding: 9px 10px; border-bottom: 1px solid #edf1ee; }
+  td.num, th.num { text-align: right; }
+  tr.tot td { font-weight: 800; background: var(--soft); }
+  .shot { border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 8px 30px rgba(19,35,91,.15); display: block; }
+  .flow { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
+  .step { flex: 1; background: var(--soft); border: 1px solid #b9e0c7; border-radius: 12px; padding: 12px; text-align: center; font-size: 15px; font-weight: 600; color: #14532d; min-height: 74px; display: flex; align-items: center; justify-content: center; }
+  .step.bad { background: #fff1ef; border-color: #f3c3bc; color: #7f1d1d; }
+  .arrow { color: #94a3b8; font-size: 22px; flex: 0 0 auto; }
+  /* title */
+  .title { background: radial-gradient(900px 500px at 0% 0%, #1f8a4c33, transparent 60%), radial-gradient(900px 600px at 100% 100%, #2563eb22, transparent 60%), var(--navy); color: #fff; }
+  .title h1 { color: #fff; font-size: 64px; margin-top: 70px; }
+  .title .sub { color: #c7d2fe; font-size: 24px; max-width: 900px; }
+  .title .kicker { color: var(--green2); }
+  .title .logo { width: 90px; height: 90px; }
+  .title .meta { position: absolute; left: 68px; bottom: 54px; font-size: 18px; color: #dbe3ff; line-height: 1.6; }
+  .title .badge { display: inline-block; border: 1px solid #ffffff55; border-radius: 999px; padding: 6px 14px; margin-right: 8px; font-size: 15px; color: #fff; }
+  .title::after { color: #ffffff55; }
+  .timeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-top: 10px; }
+  .tl { border-top: 6px solid var(--green); background: #fbfcfb; border-radius: 0 0 12px 12px; padding: 14px; border-left: 1px solid var(--line); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .tl b { display: block; font-size: 17px; color: var(--navy); } .tl .when { font-size: 13px; color: var(--green); font-weight: 700; margin-bottom: 6px; }
+  .tl p { font-size: 14px; margin: 6px 0 0; color: #334155; line-height: 1.4; }
+  .note { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- 1. Титульный -->
+<section class="slide title" data-n="1">
+  <img class="logo" src="../assets/icon.svg" alt="">
+  <div class="kicker">«Алматы технологиялық университеті» АҚ үшін</div>
+  <h1>EcoTrack ATU</h1>
+  <p class="sub">Университет кешенінің тағам қалдықтарын басқарудың цифрлық жүйесі</p>
+  <div style="margin-top:26px"><span class="badge">Смартфон + QR</span><span class="badge">Дауыспен енгізу</span><span class="badge">Есептерді тексеру</span><span class="badge">Бірыңғай тізілім</span><span class="badge">Дашборд + CO₂</span><span class="badge">ҚАЗ / РУС / ENG</span></div>
+  <div class="meta">✏️ Команда: «Команда атауы» — ТАӘ 1, ТАӘ 2, ТАӘ 3<br>Алматы · 2026 жылғы 12 қараша</div>
+</section>
+
+<section class="slide" data-n="2">
+  <div class="kicker">Мәселе цифрларда</div>
+  <h2>Қалдықтар қағазда есептеледі, сондықтан оларды басқару мүмкін емес</h2>
+  <p class="sub">АТУ-дың 5 ұйымы бір үлгідегі есеп кестелерін жүргізеді, бірақ ортақ базасыз, тексерусіз және аналитикасыз</p>
+  <div class="grid g4" style="margin-bottom:22px">
+    <div class="card"><div class="big">≈⅓</div><p>әлемдік азық-түліктің жоғалады немесе тасталады</p><div class="src">ФАО</div></div>
+    <div class="card"><div class="big orange">8–10%</div><p>жаһандық парниктік газ шығарындылары тағам шығындарымен байланысты</p><div class="src">БҰҰ</div></div>
+    <div class="card"><div class="big navy">40–50%</div><p>Қазақстандағы қатты тұрмыстық қалдықтардың — тағамдық және органикалық</p><div class="src">сарапшылық бағалау</div></div>
+    <div class="card"><div class="big red">≈36 сағ</div><p>айына АТУ-да қолмен есепке алуға, көшіруге және 5 кестені біріктіруге кетеді</p><div class="src">команда бағасы, айына ≈440 өлшеу</div></div>
+  </div>
+  <div class="grid g3">
+    <div class="card"><h3>🌍 Экология</h3><p>Қайта өңдеу есебі және ESG мен ТДМ 12.3 үшін деректер жоқ. Барлығы дерлік полигонға кетеді, ал ≈43%-ы қайта өңдеуге жарамды.</p></div>
+    <div class="card"><h3>💸 Қаржы</h3><p>Артық сатып алу: «сатылмаған өнім қалдықтары» басшылыққа уақытында көрінбейді.</p></div>
+    <div class="card"><h3>⏱ Процесс</h3><p>Қолмен біріктіру, қателер мен олқылықтар, мерзім мен есеп тапсырмағандарды бақылау жоқ.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-n="3">
+  <div class="kicker">Аналогтар және олардың шектеулері</div>
+  <h2>Дайын шешімдер университет кампусына сәйкес келмейді</h2>
+  <p class="sub">Қымбат «ақылды ас үй» емес, АТУ стандартындағы құжат айналымы бар қарапайым есеп керек</p>
+  <table>
+    <tr><th>Шешім</th><th>Не істей алады</th><th>АТУ үшін шектеулері</th></tr>
+    <tr><td><b>Winnow, Orbisk</b> (Ұлыбритания, Нидерланды)</td><td>Бактың үстіндегі ЖИ-камера, қалдықты тану</td><td>Қымбат жабдық пен валютадағы жазылым; тек ас үй; ұйымдардың есеп тапсыруы жоқ</td></tr>
+    <tr><td><b>Leanpath</b> (АҚШ)</td><td>Таразы мен планшет, шығын аналитикасы</td><td>Қазақ және орыс тілі жоқ; АТУ нысандары мен есепті тексеру жоқ; ҚР-да қолжетімсіз</td></tr>
+    <tr><td><b>Excel / Google Forms</b></td><td>Тегін, үйреншікті</td><td>Рөлдер, мәртебелер, бұғаттау, тарих және тапсырмағандарды бақылау жоқ; қолмен біріктіру</td></tr>
+    <tr><td><b>Қағаз журнал</b> (қазір)</td><td>Ештеңе баптаудың қажеті жоқ</td><td>Аналитика мен CO₂ жоқ; көшіргенде қате; айлар бойы кешігу</td></tr>
+    <tr style="background:#e9f6ee"><td><b>EcoTrack ATU</b></td><td>АТУ үлгісіндегі нысандар, workflow, тізілім, жиынтық, дашборд, CO₂</td><td>Кез келген смартфонда қосымша ретінде; ҚАЗ/РУС/ENG; дауыспен енгізу; тегін хостинг; таразымен байланысқа дайын (Трек 2)</td></tr>
+  </table>
+</section>
+
+<section class="slide" data-n="4">
+  <div class="kicker">Шешім және құндылық</div>
+  <h2>Толық цикл: өлшеуден тоқсандық есепке дейін</h2>
+  <div class="flow" style="margin:22px 0 26px">
+    <div class="step">📱 QR → ұйым нысаны</div><div class="arrow">→</div>
+    <div class="step">⚖️ Салмақ 3 басумен<br>(немесе дауыспен)</div><div class="arrow">→</div>
+    <div class="step">✅ Автотексеру<br>және күн мен ай жиыны</div><div class="arrow">→</div>
+    <div class="step">📤 Есепті бір әрекетпен<br>жіберу</div><div class="arrow">→</div>
+    <div class="step">🔍 Қабылдау немесе<br>түсініктемемен қайтару</div><div class="arrow">→</div>
+    <div class="step">📊 Тізілім · жиынтық · Excel · CO₂</div>
+  </div>
+  <div class="grid g4">
+    <div class="card"><h3>Жауапты тұлғаға</h3><ul><li>бір жазбаға ≤30 секунд</li><li>жоба жоғалмайды</li><li>фото және жаңа қалдық түрі</li></ul></div>
+    <div class="card"><h3>Тексерушіге</h3><ul><li>тексеру кезегі</li><li>тарих: кім, қашан, не</li><li>тапсырмағандар тізімі және еске салу</li></ul></div>
+    <div class="card"><h3>Басшылыққа</h3><ul><li>5 график</li><li>N %-дан асқан ауытқулар</li><li>азайту бойынша ұсыныстар</li></ul></div>
+    <div class="card"><h3>Әкімшіге</h3><ul><li>жаңа ұйым бағдарламашысыз</li><li>анықтамалықтар мен рөлдер</li><li>басып шығаруға QR-кодтар</li></ul></div>
+  </div>
+</section>
+
+<section class="slide" data-n="5">
+  <div class="kicker">Технология және MVP демо</div>
+  <h2>Жұмыс істейтін MVP: PWA + рөлдерді тексеретін API</h2>
+  <div class="grid" style="grid-template-columns: 250px 1fr; gap: 26px; margin-top: 14px">
+    <img class="shot" src="img/screens-kk/form.png" style="width:250px;height:500px;object-fit:cover;object-position:top" alt="">
+    <div>
+      <img class="shot" src="img/screens-kk/dashboard.png" style="width:100%;height:330px;object-fit:cover;object-position:top left" alt="">
+      <div class="grid g3" style="margin-top:16px;gap:14px">
+        <div class="card" style="padding:14px"><h3 style="font-size:16px">Стек</h3><p style="font-size:14px">PWA (HTML/CSS/JS, офлайн) + Supabase бұлты (PostgreSQL): смартфон мен ноутбук ~4 с ішінде синхрондалады. Chart.js, SheetJS, QR, дауыспен енгізу</p></div>
+        <div class="card" style="padding:14px"><h3 style="font-size:16px">Қауіпсіздік</h3><p style="font-size:14px">Рөлдер API қабатында тексеріледі, құпиясөздер тұзды SHA-256 хэші түрінде сақталады; пилотқа рөлдер бойынша RLS схемасы дайын</p></div>
+        <div class="card" style="padding:14px"><h3 style="font-size:16px">Деректер</h3><p style="font-size:14px">7 нысан (ER репозиторийде), ≈2 300 демо-жазба, 5 ұйым, маусым–қараша</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">Демо: https://sabithanov.github.io/ecotrack-atu/ · логиндер: iskander@atu.kz / reviewer@atu.kz · құпиясөз demo123</div>
+</section>
+
+<section class="slide" data-n="6">
+  <div class="kicker">Пайдаланушы не көреді</div>
+  <h2>Жүйе қандай ақпарат береді</h2>
+  <div class="grid" style="grid-template-columns: 200px 1fr 1fr; gap: 18px; margin-top: 14px; align-items: start">
+    <div><img class="shot" src="img/screens-kk/voice.png" style="width:200px;height:400px;object-fit:cover;object-position:top" alt=""><p class="note" style="margin-top:8px"><b>Аспаз:</b> дауыспен немесе 3 басумен. Күн мен ай жиыны, мәртебе және тексерушінің түсініктемесі</p></div>
+    <div>
+      <img class="shot" src="img/screens-kk/review.png" style="width:100%;height:205px;object-fit:cover;object-position:top left" alt="">
+      <p class="note" style="margin:6px 0 14px"><b>Тексеруші:</b> АТУ үлгісіндегі есеп, салмақ, CO₂, «қабылдау / қайтару», тарих</p>
+      <img class="shot" src="img/screens-kk/nonsub.png" style="width:100%;height:150px;object-fit:cover;object-position:top left" alt="">
+      <p class="note" style="margin-top:6px"><b>Жиынтық:</b> тоқсан Excel-де, тапсырмағандар тізімі</p>
+    </div>
+    <div>
+      <img class="shot" src="img/screens-kk/dashboard.png" style="width:100%;height:205px;object-fit:cover;object-position:top left" alt="">
+      <p class="note" style="margin:6px 0 14px"><b>Басшылық:</b> салмақ, қайта өңдеу үлесі, CO₂, динамика, ұйымдарды салыстыру</p>
+      <img class="shot" src="img/screens-kk/anomalies.png" style="width:100%;height:150px;object-fit:cover;object-position:top left" alt="">
+      <p class="note" style="margin-top:6px"><b>Аналитика:</b> +N % ауытқулар, ұсыныстар және ₸-дағы үнем</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-n="7">
+  <div class="kicker">Бизнес-процесс</div>
+  <h2>«Қазір» → «жүйемен»: еңбек шығыны −86 %</h2>
+  <p class="sub">5 ұйым, айына ≈440 өлшеу</p>
+  <div style="font-weight:700;color:#7f1d1d;margin-bottom:8px">Қазір</div>
+  <div class="flow"><div class="step bad">Өлшеді → журналға жазды<br>1,5 мин</div><div class="arrow">→</div><div class="step bad">Ай соңы: Excel-ге көшіру<br>2 сағ × 5</div><div class="arrow">→</div><div class="step bad">Поштамен жіберу, қате іздеу<br>≈12 сағ</div><div class="arrow">→</div><div class="step bad">Тоқсандық жиынтық қолмен<br>≈3 сағ</div></div>
+  <div style="font-weight:700;color:#14532d;margin:18px 0 8px">Жүйемен</div>
+  <div class="flow"><div class="step">QR → тақта → салмақ<br>0,5 мин</div><div class="arrow">→</div><div class="step">Жиын және тексеру — автоматты<br>0 сағ</div><div class="arrow">→</div><div class="step">Қабылдау немесе қайтару<br>15 мин × 5</div><div class="arrow">→</div><div class="step">Жиынтық және Excel — 1 басу<br>≈0,2 сағ</div></div>
+  <table style="margin-top:22px">
+    <tr><th>Айына сағат</th><th class="num">Жазу</th><th class="num">Көшіру</th><th class="num">Біріктіру және тексеру</th><th class="num">Есептер</th><th class="num">Барлығы</th></tr>
+    <tr><td>Қазір</td><td class="num">11</td><td class="num">10</td><td class="num">12</td><td class="num">3</td><td class="num"><b>36</b></td></tr>
+    <tr class="tot"><td>Жүйемен</td><td class="num">3,7</td><td class="num">0</td><td class="num">1,3</td><td class="num">0,2</td><td class="num">5,2</td></tr>
+  </table>
+</section>
+
+<section class="slide" data-n="8">
+  <div class="kicker">Бизнес-модель</div>
+  <h2>АТУ-да пилот, кейін Қазақстан ЖОО-лары үшін SaaS</h2>
+  <div class="grid g3" style="margin-top:20px">
+    <div class="card"><h3>👥 Клиенттер</h3><ul><li>ҚР ЖОО-лары мен колледждері (кампустар, асханалар, зертханалар)</li><li>«Қазақстан тамақ кәсіпорындары одағының» мүшелері: кейтеринг, асханалар, өндірістер</li></ul></div>
+    <div class="card"><h3>💳 Монетизация</h3><ul><li>Кампусқа жылына 300–500 мың ₸ жазылым (10 ұйымға дейін)</li><li>Енгізу және оқыту — бір реттік</li><li>Таразы модулі (Трек 2) және ESG-есеп — опция</li></ul></div>
+    <div class="card"><h3>🎯 Құндылық</h3><ul><li>Уақыт пен шикізатты үнемдеу</li><li>ESG, ТДМ 12.3 және ҚР заңнамасы үшін деректер</li><li>Басшылыққа ашықтық</li></ul></div>
+  </div>
+  <div class="grid g3" style="margin-top:20px">
+    <div class="card"><div class="big">1</div><p>кампус — АТУ пилоты, 2026–2027</p></div>
+    <div class="card"><div class="big navy">15</div><p>ЖОО 2 жылда, ҚТКО және ЖОО желісі арқылы</p></div>
+    <div class="card"><div class="big orange">≈6 млн ₸</div><p>15 жазылымдағы жылдық түсім</p></div>
+  </div>
+</section>
+
+<section class="slide" data-n="9">
+  <div class="kicker">Экономикалық әсер (АТУ пилоты)</div>
+  <h2>Өтелу мерзімі ≈4 ай</h2>
+  <div class="grid g2" style="margin-top:18px">
+    <div>
+      <table>
+        <tr><th>Жылдық әсер</th><th class="num">₸</th></tr>
+        <tr><td>Еңбек үнемі: 370 сағ × 2 500 ₸/сағ</td><td class="num">920 000</td></tr>
+        <tr><td>Шикізат: сатылмаған өнім −20 % (айына 60 кг × 1 500 ₸)</td><td class="num">1 080 000</td></tr>
+        <tr><td>OPEX: дерекқор хостингі + 0,1 ставка сүйемелдеу</td><td class="num">−516 000</td></tr>
+        <tr class="tot"><td>Таза әсер</td><td class="num">≈1 500 000</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th>CAPEX (бір реттік)</th><th class="num">₸</th></tr>
+        <tr><td>Бұлттық дерекқор, анықтамалықтарды көшіру</td><td class="num">150 000</td></tr>
+        <tr><td>Ас үйлерге 2 планшет (міндетті емес)</td><td class="num">240 000</td></tr>
+        <tr><td>QR-кодтар, 10 қызметкерді оқыту</td><td class="num">60 000</td></tr>
+        <tr class="tot"><td>Барлығы CAPEX</td><td class="num">450 000</td></tr>
+      </table>
+      <div class="card" style="margin-top:18px"><p><b>Өтелуі:</b> 450 мың ₸ ÷ жылына 1,5 млн ₸ ≈ <b>3,6 ай.</b><br>MVP (код) дайын, хостингі тегін.</p></div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:16px">Команданың болжамдары: салықпен сағатына 2 500 ₸; өзіндік құны 1 500 ₸/кг; сатылмаған өнім көлемі АТУ кестелерінің үлгісімен құрылған демо-деректер бойынша бағаланды. Пилотта нақтылау керек.</p>
+</section>
+
+<section class="slide" data-n="10">
+  <div class="kicker">Экологиялық әсер · ТДМ 12.3 / 12.5</div>
+  <h2>Жылына полигонға −13 т қалдық және ≈−9 т CO₂-экв.</h2>
+  <div class="grid g4" style="margin:20px 0">
+    <div class="card"><div class="big navy">≈30 т</div><p>жылына тағам қалдықтары (5 ұйым)</p></div>
+    <div class="card"><div class="big">43%</div><p>қайта өңдеуге жарамды, ал қазір ≈3%-ы өңделеді</p></div>
+    <div class="card"><div class="big orange">≈21 т</div><p>қазір жылына CO₂-экв.</p></div>
+    <div class="card"><div class="big">≈53 мың</div><p>км автокөлік жүрісі — азайтудың баламасы</p></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>Жүйе не береді</h3><ul><li>Кәдеге жарату тәсілін ескеріп, әр жазбаның CO₂-сі</li><li>«Азайту әлеуеті»: жарамды қалдықтармен қанша CO₂ кетеді</li><li>Ұсыныстар: картон — макулатураға, қабық пен кофе қалдығы — компостқа, май — биоотынға</li></ul></div>
+    <div class="card"><h3>Әдістеме</h3><p>UK DESNZ/DEFRA GHG Conversion Factors 2024 (Waste disposal) коэффициенттері: полигондағы тағам ≈0,70 кг CO₂-экв./кг, картон ≈1,04, қайта өңдеу немесе компост ≈0,01. Коэффициенттер анықтамалықта өзгертіледі.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-n="11">
+  <div class="kicker">Енгізу жоспары</div>
+  <h2>Бір асханадан — барлық ЖОО-ларға</h2>
+  <div class="timeline">
+    <div class="tl"><div class="when">Бүгін</div><b>MVP</b><p>Толық цикл, 5 ұйым, демо-деректер</p></div>
+    <div class="tl"><div class="when">1–2 ай</div><b>Пилот</b><p>«Искандер» асханасы: бұлттық дерекқор, ас үйде QR, оқыту</p></div>
+    <div class="tl"><div class="when">3–6 ай</div><b>Бүкіл АТУ</b><p>5 ұйым, буфеттер, зертханалар; Telegram-еске салу; Excel импорты</p></div>
+    <div class="tl"><div class="when">6–9 ай</div><b>Таразы және ЖИ</b><p>Электрондық таразыға API (Трек 2), қалдықты фото арқылы тану</p></div>
+    <div class="tl"><div class="when">9–24 ай</div><b>Басқа ЖОО-лар</b><p>SaaS және көп жалдаушылық, ҚТКО арқылы сату</p></div>
+  </div>
+  <div class="grid g3" style="margin-top:24px">
+    <div class="card"><h3>Ресурстар</h3><p>Пилотта 1 әзірлеуші, АТУ-дан жауапты тексеруші, сүйемелдеуге 0,1 ставка</p></div>
+    <div class="card"><h3>Тәуекелдер</h3><p>Қызметкерлердің қарсылығы; толық емес деректер; ас үйде интернеттің болмауы</p></div>
+    <div class="card"><h3>Шаралар</h3><p>3 басу және дауыспен енгізу; тапсырмағандар мен мерзімді бақылау; PWA офлайн режимі</p></div>
+  </div>
+</section>
+
+<section class="slide title" data-n="12">
+  <div class="kicker" style="margin-top:20px">Команда және өтініш</div>
+  <h1 style="margin-top:6px;font-size:52px">АТУ-дағы пилотқа дайынбыз</h1>
+  <div class="grid g2" style="margin-top:22px;gap:28px">
+    <div style="font-size:20px;line-height:1.7;color:#dbe3ff">
+      ✏️ <b>ТАӘ 1</b> — капитан, өнім және презентация<br>
+      ✏️ <b>ТАӘ 2</b> — әзірлеу<br>
+      ✏️ <b>ТАӘ 3</b> — аналитика, экономика, экология
+    </div>
+    <div style="font-size:20px;line-height:1.6;color:#fff">
+      <b>Біздің өтініш:</b>
+      <ul style="margin:8px 0 0;padding-left:22px;color:#dbe3ff">
+        <li>«Искандер» асханасында 2 айлық пилот</li>
+        <li>АТУ-дан жауапты тексеруші</li>
+        <li>Нақты есеп кестелеріне қолжетімділік</li>
+        <li>Электрондық таразы бойынша серіктес (Трек 2)</li>
+      </ul>
+    </div>
+  </div>
+  <div class="meta">Демо: https://sabithanov.github.io/ecotrack-atu/ · Код: https://github.com/sabithanov/ecotrack-atu<br>Логиндер: iskander@atu.kz · reviewer@atu.kz · admin@atu.kz — құпиясөз demo123</div>
+</section>
+
+<script>
+  (function () { // ?n=5 — тек бір слайдты көрсету (PNG экспорты үшін)
+    var n = +new URLSearchParams(location.search).get('n');
+    if (n) { document.body.style.background = '#fff'; document.querySelectorAll('.slide').forEach(function (s, i) { if (i + 1 !== n) s.remove(); else s.style.margin = '0'; }); }
+  })();
+</script>
+</body>
+</html>

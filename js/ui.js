@@ -8,13 +8,14 @@
   window.fmt = function (n, d) {
     if (d == null) d = 1;
     var p = Math.pow(10, d);
-    return (Math.round((n || 0) * p) / p).toLocaleString('ru-RU', { maximumFractionDigits: d, minimumFractionDigits: 0 });
+    return (Math.round((n || 0) * p) / p).toLocaleString(I18N.lang === 'en' ? 'en-US' : 'ru-RU', { maximumFractionDigits: d, minimumFractionDigits: 0 });
   };
   window.pct = function (n, d) { return fmt(n * 100, d == null ? 1 : d) + '%'; };
 
   var MONTHS = {
     ru: ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'],
-    kk: ['қаңтар', 'ақпан', 'наурыз', 'сәуір', 'мамыр', 'маусым', 'шілде', 'тамыз', 'қыркүйек', 'қазан', 'қараша', 'желтоқсан']
+    kk: ['қаңтар', 'ақпан', 'наурыз', 'сәуір', 'мамыр', 'маусым', 'шілде', 'тамыз', 'қыркүйек', 'қазан', 'қараша', 'желтоқсан'],
+    en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
   };
   window.monthLabel = function (period, short) {
     var m = +period.slice(5, 7) - 1, y = period.slice(0, 4);
@@ -32,7 +33,7 @@
   window.monthRange = function (from, to) { var out = []; for (var p = from; p <= to; p = addMonths(p, 1)) out.push(p); return out; };
   window.quarterOf = function (period) { return period.slice(0, 4) + '-Q' + (Math.floor((+period.slice(5, 7) - 1) / 3) + 1); };
   window.quarterMonths = function (q) { var y = q.slice(0, 4), n = +q.slice(6); var s = y + '-' + String((n - 1) * 3 + 1).padStart(2, '0'); return [s, addMonths(s, 1), addMonths(s, 2)]; };
-  window.quarterLabel = function (q) { return q.slice(6) + ' ' + t('квартал') + ' ' + q.slice(0, 4); };
+  window.quarterLabel = function (q) { return I18N.lang === 'en' ? 'Q' + q.slice(6) + ' ' + q.slice(0, 4) : q.slice(6) + ' ' + t('квартал') + ' ' + q.slice(0, 4); };
   window.deadlineOf = function (period, day) { return addMonths(period, 1) + '-' + String(day || 5).padStart(2, '0'); };
   window.daysBetween = function (a, b) { return Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 86400000); };
 
