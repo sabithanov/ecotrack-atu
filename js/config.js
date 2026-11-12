@@ -7,5 +7,5 @@ window.ECOTRACK_CONFIG = {
   // публичный адрес сайта — на него ведут QR-коды организаций
   publicUrl: 'https://sabithanov.github.io/ecotrack-atu/',
   // номер WhatsApp поддержки в международном формате, только цифры (например 77011234567)
-  supportWhatsApp: ''
+  supportWhatsApp: '77071817353'
 };

@@ -208,7 +208,7 @@
     var u = API.me();
     var msg = pick(L('Здравствуйте! Нужна помощь по EcoTrack ATU.', 'Сәлеметсіз бе! EcoTrack ATU бойынша көмек керек.', 'Hello! I need help with EcoTrack ATU.'));
     if (u) msg += '\n' + u.name + ' (' + u.email + ')' + (u.orgId ? ', ' + (API.org(u.orgId) || {}).short : '');
-    msg += '\n' + location.hash.replace('#/', '');
+    msg += '\n' + pick(L('Страница: ', 'Бет: ', 'Page: ')) + (location.hash.replace('#/', '').split('?')[0] || 'login');
     return 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
   }
   function openSupport() {
