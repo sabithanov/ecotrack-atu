@@ -197,7 +197,7 @@
         actions: [{ label: t('Отмена'), cls: 'ghost' }, {
           label: t('Добавить'), cls: 'primary', onClick: function (w) {
             var cat = $('#nt-cat', w).value;
-            var co2 = { food: 0.70, packaging: 0.009, paper: 1.04, oil: 0.70, other: 0.45 }[cat];
+            var co2 = { food: 0.70021, packaging: 0.00888, paper: 1.16439, oil: 0.70021, other: 1.16439 }[cat];
             try {
               var nt = API.saveWasteType({ name: $('#nt-name', w).value, unit: $('#nt-unit', w).value, category: cat, methodId: $('#nt-method', w).value, recyclable: $('#nt-rec', w).checked, co2: co2, maxQty: 200 });
               toast(t('Вид отхода добавлен в справочник'));

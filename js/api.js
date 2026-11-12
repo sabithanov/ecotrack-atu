@@ -3,7 +3,7 @@
    В демо-режиме хранилище — localStorage браузера; для пилота этот же контракт переносится
    на сервер (Supabase/PostgreSQL + RLS, см. supabase/schema.sql). */
 (function () {
-  var DB_KEY = 'ecotrack_db_v2', SES_KEY = 'ecotrack_session';
+  var DB_KEY = 'ecotrack_db_v3', SES_KEY = 'ecotrack_session';
   var EDITABLE = ['draft', 'returned'];
 
   function ApiError(message, code) { this.message = message; this.code = code || 'ERR'; }
@@ -129,8 +129,9 @@
     saveMethod: function (m) {
       this._auth(['admin']);
       if (!m.name) throw new ApiError(t('Введите название'), 'VALIDATION');
-      if (m.id) Object.assign(this.db.methods.filter(function (x) { return x.id === m.id; })[0], { name: m.name, mode: m.mode, active: m.active !== false });
-      else this.db.methods.push({ id: this.nid('m_'), name: m.name, mode: m.mode || 'landfill', active: true });
+      var data = { name: m.name, mode: m.mode || 'landfill', code: m.code || '', co2: m.co2 === '' || m.co2 == null ? null : +m.co2, rank: +m.rank || null, note: m.note || '', active: m.active !== false };
+      if (m.id) Object.assign(this.db.methods.filter(function (x) { return x.id === m.id; })[0], data);
+      else this.db.methods.push(Object.assign({ id: this.nid('m_') }, data));
       this.save();
     },
     wasteTypes: function (orgId, opts) {
@@ -153,9 +154,14 @@
       if (dup) throw new ApiError(t('Такой вид отхода уже есть в справочнике организации'), 'VALIDATION');
       var rec = {
         name: name, unit: w.unit === 'l' ? 'l' : 'kg', density: w.unit === 'l' ? (+w.density || 0.92) : 1,
-        category: w.category || 'food', recyclable: !!w.recyclable, co2: w.co2 != null && w.co2 !== '' ? +w.co2 : 0.7,
+        category: w.category || 'food', co2: w.co2 != null && w.co2 !== '' ? +w.co2 : 0.70021,
         methodId: w.methodId, maxQty: +w.maxQty || 200
       };
+      var lvl = w.recLevel || (w.recyclable ? 'yes' : 'no');
+      rec.recLevel = lvl; rec.recyclable = lvl === 'yes';
+      if (w.recMethodId !== undefined) rec.recMethodId = w.recMethodId || null;
+      if (w.recCo2 !== undefined && w.recCo2 !== '') rec.recCo2 = w.recCo2 == null ? null : +w.recCo2;
+      if (w.note !== undefined) rec.note = String(w.note || '');
       var t0;
       if (w.id) { t0 = this.db.wasteTypes.filter(function (x) { return x.id === w.id; })[0]; Object.assign(t0, rec, { active: w.active !== false }); }
       else { t0 = Object.assign({ id: this.nid('wt_'), orgId: w.orgId || null, active: true, createdBy: u.id }, rec); this.db.wasteTypes.push(t0); }
@@ -354,14 +360,65 @@
     /* ---------- Вспомогательные расчёты ---------- */
     kg: function (e) { var w = this.wasteType(e.typeId); return e.qty * (w && w.unit === 'l' ? (w.density || 0.92) : 1); },
     isDiverted: function (e) { var m = this.method(e.methodId); return !!m && m.mode !== 'landfill'; },
+    /* CO₂-экв., кг: ТБО — коэффициент вида отхода; иначе — коэффициент способа (DEFRA 2024, файл оргкомитета) */
     co2: function (e) {
-      var w = this.wasteType(e.typeId);
-      return this.kg(e) * (this.isDiverted(e) ? this.db.settings.divertedFactor : (w ? w.co2 : 0.7));
+      var w = this.wasteType(e.typeId), m = this.method(e.methodId);
+      if (!m || m.mode === 'landfill') return this.kg(e) * (w ? w.co2 : 0.70021);
+      return this.kg(e) * (m.co2 != null ? m.co2 : 0);
     },
-    co2Saving: function (e) { // потенциальное снижение, если пригодный отход не захоранивать
+    recLevel: function (w) { return w ? (w.recLevel || (w.recyclable ? 'yes' : 'no')) : 'no'; },
+    /* потенциал снижения: масса × (коэффициент ТБО − коэффициент рекомендуемого способа), если сейчас вывозится на ТБО */
+    co2Saving: function (e) {
       var w = this.wasteType(e.typeId);
-      if (!w || !w.recyclable || this.isDiverted(e)) return 0;
-      return this.kg(e) * Math.max(0, w.co2 - this.db.settings.divertedFactor);
+      if (!w || this.isDiverted(e) || this.recLevel(w) === 'no') return 0;
+      var rc = w.recCo2 != null ? w.recCo2 : ((this.method(w.recMethodId) || {}).co2);
+      if (rc == null) rc = 0.00888;
+      return this.kg(e) * Math.max(0, w.co2 - rc);
+    },
+
+    /* ---------- Импорт справочника из Excel (формат файла оргкомитета) ---------- */
+    importReference: function (ref) {
+      this._auth(['reviewer', 'admin']);
+      var self = this, rep = { methodsUpdated: 0, methodsCreated: 0, typesUpdated: 0, typesCreated: 0, skipped: [] };
+      var MODE = { DONATE: 'donate', FEED: 'feed', RECYCLE: 'recycle', OIL: 'recycle', AD: 'ad', COMPOST: 'compost', TBO: 'landfill', TBO_BIN: 'landfill' };
+      (ref.methods || []).forEach(function (r) {
+        var code = String(r.code || '').trim().toUpperCase(); if (!code || !r.name) return;
+        var m = self.db.methods.filter(function (x) { return x.code === code; })[0];
+        var data = { code: code, name: r.name, mode: MODE[code] || (/тбо|полигон/i.test(r.name) ? 'landfill' : 'recycle'), co2: r.co2 != null && r.co2 !== '' ? +r.co2 / 1000 : (code === 'TBO' ? null : 0), rank: +r.rank || null, note: r.note || '', active: true };
+        if (m) { Object.assign(m, data); rep.methodsUpdated++; } else { self.db.methods.push(Object.assign({ id: self.nid('m_') }, data)); rep.methodsCreated++; }
+      });
+      function methodByText(txt) {
+        var x = String(txt || '').toLowerCase(), order = [[/фудшер|передач.*продук|благотвор/, 'DONATE'], [/компост/, 'COMPOST'], [/биогаз|анаэроб/, 'AD'], [/корм/, 'FEED'], [/масл|биодиз|спецорганиз/, 'OIL'], [/переработ|вторсыр/, 'RECYCLE'], [/тбо|полигон/, 'TBO']];
+        for (var i = 0; i < order.length; i++) if (order[i][0].test(x)) { var c = order[i][1]; return self.db.methods.filter(function (m) { return m.code === c; })[0]; }
+        return null;
+      }
+      var ORGS = [[/atu inn|гостинич/i, 'org_inn'], [/столов|искандер/i, 'org_iskander'], [/кофейн|canella/i, 'org_canella'], [/тхипп/i, 'org_thpp'], [/кафедра тпп|(^|[^х])тпп/i, 'org_tpp']];
+      var CAT = { 'органические': 'food', 'специальные': 'oil', 'смешанные': 'other' };
+      (ref.types || []).forEach(function (r) {
+        var name = String(r.name || '').trim(); if (!name) return;
+        var orgIds = [];
+        String(r.orgs || '').split(/[;,]/).forEach(function (part) { ORGS.forEach(function (o) { if (o[0].test(part) && orgIds.indexOf(o[1]) < 0) orgIds.push(o[1]); }); });
+        if (!orgIds.length) { rep.skipped.push(name); return; }
+        var cat = CAT[String(r.category || '').toLowerCase()] || (/картон|бумаг/i.test(name) ? 'paper' : /вторсыр/i.test(r.category || '') ? 'packaging' : 'food');
+        var lvl = /частич/i.test(r.recyclable) ? 'partial' : /нет/i.test(r.recyclable) ? 'no' : 'yes';
+        var rm = methodByText(r.recMethod);
+        var unit = /^л/i.test(String(r.unit || '')) ? 'l' : 'kg';
+        orgIds.forEach(function (oid) {
+          var w = self.db.wasteTypes.filter(function (x) { return x.orgId === oid && x.name.toLowerCase() === name.toLowerCase(); })[0];
+          var data = { category: cat, recLevel: lvl, recyclable: lvl === 'yes', unit: unit, density: unit === 'l' ? 0.92 : 1, note: r.note || '' };
+          if (r.co2Tbo !== '' && r.co2Tbo != null) data.co2 = +r.co2Tbo / 1000;
+          if (r.co2Rec !== '' && r.co2Rec != null) data.recCo2 = +r.co2Rec / 1000;
+          if (rm) data.recMethodId = rm.id;
+          if (w) { Object.assign(w, data); rep.typesUpdated++; }
+          else {
+            var tbo = self.db.methods.filter(function (m) { return m.code === 'TBO'; })[0] || self.db.methods[0];
+            self.db.wasteTypes.push(Object.assign({ id: self.nid('wt_'), orgId: oid, name: name, methodId: tbo.id, maxQty: 200, active: true, co2: 0.70021 }, data));
+            rep.typesCreated++;
+          }
+        });
+      });
+      this.save();
+      return rep;
     },
 
     /* ---------- Данные ---------- */

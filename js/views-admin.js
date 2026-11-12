@@ -94,6 +94,7 @@
   }
 
   /* ---------- Виды отходов ---------- */
+  function kgT(v) { return v == null || v === '' ? '—' : fmt(v * 1000, 2); } // кг/кг → кг/т (как в справочнике оргкомитета)
   function typesTab(user, el, h) {
     var orgs = API.orgs({ all: true });
     var orgId = h.q.org || orgs[0].id;
@@ -101,17 +102,24 @@
     var methods = API.methods({ all: true });
     var mn = {}; methods.forEach(function (m) { mn[m.id] = m.name; });
     el.innerHTML = '<div class="filters card"><label class="field"><span>' + esc(t('Организация')) + '</span><select id="t-org">' + optionList(orgs, orgId, function (o) { return o.id; }, function (o) { return o.name; }) + '</select></label>' +
-      '<button class="btn primary" id="t-add">＋ ' + esc(t('Добавить вид отхода')) + '</button></div>' +
-      '<div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>' + esc(t('Наименование')) + '</th><th>' + esc(t('Ед.')) + '</th><th>' + esc(t('Категория')) + '</th><th>' + esc(t('Способ по умолчанию')) + '</th><th>♻</th><th class="num">CO₂ ' + esc(t('кг/кг')) + '</th><th class="num">' + esc(t('Макс. за запись')) + '</th><th class="num">' + esc(t('Записей')) + '</th><th>' + esc(t('Статус')) + '</th><th></th></tr></thead><tbody>' +
+      '<button class="btn primary" id="t-add">＋ ' + esc(t('Добавить вид отхода')) + '</button>' +
+      '<label class="btn ghost file-btn">⬆ ' + esc(t('Импорт справочника из Excel')) + '<input type="file" id="t-import" accept=".xlsx,.xls" hidden></label></div>' +
+      '<div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>' + esc(t('Наименование')) + '</th><th>' + esc(t('Ед.')) + '</th><th>' + esc(t('Категория')) + '</th><th>' + esc(t('Пригоден к переработке')) + '</th><th>' + esc(t('Способ сейчас')) + '</th><th>' + esc(t('Рекомендуемый способ')) + '</th>' +
+      '<th class="num">CO₂ ' + esc(t('ТБО')) + ',<br>' + esc(t('кг/т')) + '</th><th class="num">CO₂ ' + esc(t('рекоменд.')) + ',<br>' + esc(t('кг/т')) + '</th><th class="num">' + esc(t('Экономия')) + ',<br>' + esc(t('кг/т')) + '</th><th class="num">' + esc(t('Записей')) + '</th><th>' + esc(t('Статус')) + '</th><th></th></tr></thead><tbody>' +
       types.map(function (w) {
-        var used = API.typeUsage(w.id);
-        return '<tr class="' + (w.active ? '' : 'inactive') + '"><td>' + esc(w.name) + '</td><td>' + unitLabel(w.unit) + '</td><td class="small">' + esc(t(CATEGORIES[w.category] || '')) + '</td><td class="small">' + esc(mn[w.methodId] || '') + '</td><td>' + (w.recyclable ? '✓' : '') + '</td><td class="num">' + w.co2 + '</td><td class="num">' + w.maxQty + '</td><td class="num">' + used + '</td>' +
+        var used = API.typeUsage(w.id), lvl = API.recLevel(w);
+        var rc = w.recCo2 != null ? w.recCo2 : null;
+        return '<tr class="' + (w.active ? '' : 'inactive') + '"><td>' + esc(w.name) + (w.note ? '<div class="small muted">' + esc(w.note) + '</div>' : '') + '</td><td>' + unitLabel(w.unit) + '</td><td class="small">' + esc(t(CATEGORIES[w.category] || '')) + '</td>' +
+          '<td><span class="badge ' + (lvl === 'yes' ? 'st-accepted' : lvl === 'partial' ? 'st-submitted' : 'st-none') + '">' + esc(t(REC_LEVELS[lvl])) + '</span></td>' +
+          '<td class="small">' + esc(mn[w.methodId] || '') + '</td><td class="small">' + esc(mn[w.recMethodId] || '—') + '</td>' +
+          '<td class="num">' + kgT(w.co2) + '</td><td class="num">' + kgT(rc) + '</td><td class="num"><b>' + (rc != null ? kgT(Math.max(0, w.co2 - rc)) : '—') + '</b></td><td class="num">' + used + '</td>' +
           '<td>' + (w.active ? '<span class="badge st-accepted">' + esc(t('активен')) + '</span>' : '<span class="badge st-none">' + esc(t('деактивирован')) + '</span>') + '</td>' +
           '<td class="nowrap"><button class="btn ghost sm" data-edit="' + w.id + '">✎</button> <button class="btn ghost sm" data-toggle="' + w.id + '">' + esc(w.active ? t('Деактивировать') : t('Активировать')) + '</button>' +
           (user.role === 'admin' && !used ? ' <button class="btn ghost sm" data-del="' + w.id + '">🗑</button>' : '') + '</td></tr>';
-      }).join('') + '</tbody></table></div><p class="small muted">' + esc(t('Удаление вида отхода, по которому есть записи, запрещено — используйте деактивацию.')) + '</p></div>';
+      }).join('') + '</tbody></table></div><p class="small muted">' + esc(t('Коэффициенты — UK DEFRA 2024 (Waste disposal), кг CO₂-экв на тонну, по справочнику оргкомитета. Экономия = масса × (CO₂ ТБО − CO₂ рекомендуемого способа).')) + ' ' + esc(t('Удаление вида отхода, по которому есть записи, запрещено — используйте деактивацию.')) + '</p></div>';
     $('#t-org').onchange = function () { go('admin/types?org=' + this.value); };
-    $('#t-add').onclick = function () { typeDialog({ orgId: orgId, unit: 'kg', category: 'food', recyclable: true, co2: 0.7, maxQty: 200, methodId: methods[0].id }, methods); };
+    $('#t-add').onclick = function () { typeDialog({ orgId: orgId, unit: 'kg', category: 'food', recLevel: 'yes', co2: 0.70021, recCo2: 0.00888, maxQty: 200, methodId: methods[0].id }, methods); };
+    $('#t-import').onchange = function () { var f = this.files[0]; this.value = ''; if (f) importReferenceFile(f); };
     $$('[data-edit]', el).forEach(function (b) { b.onclick = function () { typeDialog(types.filter(function (w) { return w.id === b.dataset.edit; })[0], methods); }; });
     $$('[data-toggle]', el).forEach(function (b) {
       b.onclick = function () { var w = types.filter(function (x) { return x.id === b.dataset.toggle; })[0]; try { API.setWasteTypeActive(w.id, !w.active); route(); } catch (e) { showError(e); } };
@@ -120,21 +128,61 @@
       b.onclick = function () { confirmDlg(t('Удалить вид отхода?'), t('Удалить')).then(function (ok) { if (!ok) return; try { API.deleteWasteType(b.dataset.del); route(); } catch (e) { showError(e); } }); };
     });
   }
+
+  /* Импорт файла «Справочники для Трека 1: отходы, утилизация, CO₂» (листы «Виды отходов» и «Способы утилизации») */
+  function importReferenceFile(file) {
+    if (!window.XLSX) { toast(t('Библиотека Excel не загружена — нужен интернет при первом открытии'), 'err'); return; }
+    var rd = new FileReader();
+    rd.onload = function () {
+      try {
+        var wb = XLSX.read(new Uint8Array(rd.result), { type: 'array' });
+        function sheet(re) { var n = wb.SheetNames.filter(function (x) { return re.test(x); })[0]; return n ? XLSX.utils.sheet_to_json(wb.Sheets[n], { defval: '' }) : []; }
+        function col(row, re) { var k = Object.keys(row).filter(function (x) { return re.test(x); })[0]; return k ? row[k] : ''; }
+        var types = sheet(/вид/i).map(function (r) {
+          return { name: col(r, /^вид отход/i), orgs: col(r, /организ/i), category: col(r, /категор/i), unit: col(r, /^ед/i), recyclable: col(r, /пригод/i),
+            recMethod: col(r, /рекоменд/i), co2Tbo: col(r, /тбо/i), co2Rec: col(r, /рекомендуемом|при рекоменд/i), note: col(r, /примеч/i) };
+        }).filter(function (r) { return String(r.name).trim(); });
+        var methods = sheet(/способ/i).map(function (r) {
+          return { code: col(r, /^код/i), name: col(r, /^способ/i), co2: col(r, /co₂|co2/i), rank: col(r, /иерарх/i), note: col(r, /примеч/i) };
+        }).filter(function (r) { return String(r.code).trim(); });
+        if (!types.length && !methods.length) throw new Error(t('В файле не найдены листы «Виды отходов» / «Способы утилизации»'));
+        var rep = API.importReference({ types: types, methods: methods });
+        openModal({
+          title: '✓ ' + t('Справочник загружен'),
+          body: '<p><b>' + esc(file.name) + '</b></p><ul>' +
+            '<li>' + esc(t('Способы утилизации')) + ': ' + esc(t('обновлено')) + ' ' + rep.methodsUpdated + ', ' + esc(t('добавлено')) + ' ' + rep.methodsCreated + '</li>' +
+            '<li>' + esc(t('Виды отходов')) + ': ' + esc(t('обновлено')) + ' ' + rep.typesUpdated + ', ' + esc(t('добавлено')) + ' ' + rep.typesCreated + '</li>' +
+            (rep.skipped.length ? '<li>' + esc(t('Пропущено (организация не найдена)')) + ': ' + esc(rep.skipped.join(', ')) + '</li>' : '') +
+            '</ul><p class="small muted">' + esc(t('Категории, пригодность, рекомендуемые способы, коэффициенты CO₂ и примечания обновлены во всех организациях. Новые записи считаются по новым коэффициентам сразу.')) + '</p>',
+          actions: [{ label: 'OK', cls: 'primary', onClick: function () { setTimeout(route, 0); } }]
+        });
+      } catch (e) { showError(e); }
+    };
+    rd.readAsArrayBuffer(file);
+  }
+
   function typeDialog(w, methods) {
+    var lvl = API.recLevel(w);
     var body = '<label class="field"><span>' + esc(t('Наименование отходов')) + ' *</span><input id="w-name" value="' + esc(w.name || '') + '"></label>' +
       '<div class="grid2"><label class="field"><span>' + esc(t('Единица')) + '</span><select id="w-unit"><option value="kg"' + (w.unit === 'kg' ? ' selected' : '') + '>' + esc(t('кг')) + '</option><option value="l"' + (w.unit === 'l' ? ' selected' : '') + '>' + esc(t('л')) + '</option></select></label>' +
       '<label class="field"><span>' + esc(t('Плотность, кг/л (для л)')) + '</span><input id="w-dens" type="number" step="0.01" value="' + (w.density || 1) + '"></label></div>' +
       '<div class="grid2"><label class="field"><span>' + esc(t('Категория')) + '</span><select id="w-cat">' + Object.keys(CATEGORIES).map(function (k) { return '<option value="' + k + '"' + (w.category === k ? ' selected' : '') + '>' + esc(t(CATEGORIES[k])) + '</option>'; }).join('') + '</select></label>' +
-      '<label class="field"><span>' + esc(t('Способ утилизации по умолчанию')) + '</span><select id="w-method">' + optionList(methods, w.methodId, function (m) { return m.id; }, function (m) { return m.name; }) + '</select></label></div>' +
-      '<div class="grid2"><label class="field"><span>' + esc(t('Коэффициент CO₂, кг CO₂-экв./кг (полигон)')) + '</span><input id="w-co2" type="number" step="0.001" value="' + w.co2 + '"></label>' +
-      '<label class="field"><span>' + esc(t('Разумный максимум за одну запись')) + '</span><input id="w-max" type="number" step="1" value="' + w.maxQty + '"></label></div>' +
-      '<label class="check"><input type="checkbox" id="w-rec"' + (w.recyclable ? ' checked' : '') + '> ' + esc(t('Пригоден к переработке')) + '</label>';
+      '<label class="field"><span>' + esc(t('Пригоден к переработке')) + '</span><select id="w-lvl">' + Object.keys(REC_LEVELS).map(function (k) { return '<option value="' + k + '"' + (lvl === k ? ' selected' : '') + '>' + esc(t(REC_LEVELS[k])) + '</option>'; }).join('') + '</select></label></div>' +
+      '<div class="grid2"><label class="field"><span>' + esc(t('Способ утилизации по умолчанию')) + '</span><select id="w-method">' + optionList(methods, w.methodId, function (m) { return m.id; }, function (m) { return m.name; }) + '</select></label>' +
+      '<label class="field"><span>' + esc(t('Рекомендуемый способ')) + '</span><select id="w-rmethod"><option value="">—</option>' + optionList(methods, w.recMethodId, function (m) { return m.id; }, function (m) { return m.name; }) + '</select></label></div>' +
+      '<div class="grid2"><label class="field"><span>CO₂ ' + esc(t('при вывозе ТБО, кг CO₂-экв/т')) + '</span><input id="w-co2" type="number" step="0.01" value="' + (w.co2 != null ? Math.round(w.co2 * 100000) / 100 : '') + '"></label>' +
+      '<label class="field"><span>CO₂ ' + esc(t('при рекомендуемом способе, кг CO₂-экв/т')) + '</span><input id="w-rco2" type="number" step="0.01" value="' + (w.recCo2 != null ? Math.round(w.recCo2 * 100000) / 100 : '') + '"></label></div>' +
+      '<div class="grid2"><label class="field"><span>' + esc(t('Разумный максимум за одну запись')) + '</span><input id="w-max" type="number" step="1" value="' + w.maxQty + '"></label>' +
+      '<label class="field"><span>' + esc(t('Примечание')) + '</span><input id="w-note" value="' + esc(w.note || '') + '"></label></div>';
     openModal({
-      title: w.id ? t('Вид отхода') : t('Добавить вид отхода'), body: body,
+      title: w.id ? t('Вид отхода') : t('Добавить вид отхода'), body: body, wide: true,
       actions: [{ label: t('Отмена'), cls: 'ghost' }, {
         label: t('Сохранить'), cls: 'primary', onClick: function (m) {
           try {
-            API.saveWasteType({ id: w.id, orgId: w.orgId, active: w.active !== false, name: $('#w-name', m).value, unit: $('#w-unit', m).value, density: $('#w-dens', m).value, category: $('#w-cat', m).value, methodId: $('#w-method', m).value, co2: $('#w-co2', m).value, maxQty: $('#w-max', m).value, recyclable: $('#w-rec', m).checked });
+            var co2 = $('#w-co2', m).value, rco2 = $('#w-rco2', m).value;
+            API.saveWasteType({ id: w.id, orgId: w.orgId, active: w.active !== false, name: $('#w-name', m).value, unit: $('#w-unit', m).value, density: $('#w-dens', m).value, category: $('#w-cat', m).value,
+              methodId: $('#w-method', m).value, recMethodId: $('#w-rmethod', m).value, recLevel: $('#w-lvl', m).value, note: $('#w-note', m).value,
+              co2: co2 === '' ? '' : +co2 / 1000, recCo2: rco2 === '' ? null : +rco2 / 1000, maxQty: $('#w-max', m).value });
             toast(t('Сохранено')); setTimeout(route, 0);
           } catch (e) { showError(e); return false; }
         }
@@ -144,17 +192,27 @@
 
   /* ---------- Способы утилизации ---------- */
   function methodsTab(user, el) {
-    var methods = API.methods({ all: true });
+    var methods = API.methods({ all: true }).sort(function (a, b) { return (a.rank || 9) - (b.rank || 9); });
     el.innerHTML = '<div class="row-actions"><button class="btn primary" id="m-add">＋ ' + esc(t('Добавить способ')) + '</button></div>' +
-      '<div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>' + esc(t('Название')) + '</th><th>' + esc(t('Тип обращения')) + '</th><th>' + esc(t('Статус')) + '</th><th></th></tr></thead><tbody>' +
-      methods.map(function (m) { return '<tr><td>' + esc(m.name) + '</td><td>' + esc(t(MODES[m.mode])) + '</td><td>' + (m.active ? '<span class="badge st-accepted">' + esc(t('активен')) + '</span>' : '<span class="badge st-none">' + esc(t('деактивирован')) + '</span>') + '</td><td><button class="btn ghost sm" data-edit="' + m.id + '">✎</button></td></tr>'; }).join('') +
-      '</tbody></table></div></div>';
+      '<div class="card"><div class="table-wrap"><table class="tbl"><thead><tr><th>' + esc(t('Код')) + '</th><th>' + esc(t('Название')) + '</th><th>' + esc(t('Тип обращения')) + '</th><th class="num">CO₂, ' + esc(t('кг/т')) + '</th><th class="num">' + esc(t('Иерархия (1 — лучше)')) + '</th><th>' + esc(t('Примечание')) + '</th><th>' + esc(t('Статус')) + '</th><th></th></tr></thead><tbody>' +
+      methods.map(function (m) {
+        return '<tr><td><code>' + esc(m.code || '') + '</code></td><td>' + esc(m.name) + '</td><td class="small">' + esc(t(MODES[m.mode] || m.mode)) + '</td><td class="num">' + (m.mode === 'landfill' ? esc(t('по виду')) : kgT(m.co2)) + '</td><td class="num">' + (m.rank || '—') + '</td><td class="small muted">' + esc(m.note || '') + '</td>' +
+          '<td>' + (m.active ? '<span class="badge st-accepted">' + esc(t('активен')) + '</span>' : '<span class="badge st-none">' + esc(t('деактивирован')) + '</span>') + '</td><td><button class="btn ghost sm" data-edit="' + m.id + '">✎</button></td></tr>';
+      }).join('') +
+      '</tbody></table></div><p class="small muted">' + esc(t('Иерархия обращения с отходами: предотвращение и передача → корм → переработка → компост/биогаз → полигон.')) + '</p></div>';
     function dlg(m) {
       m = m || { name: '', mode: 'landfill', active: true };
       openModal({
         title: t('Способ утилизации'),
-        body: '<label class="field"><span>' + esc(t('Название')) + '</span><input id="mm-name" value="' + esc(m.name) + '"></label><label class="field"><span>' + esc(t('Тип обращения')) + '</span><select id="mm-mode">' + Object.keys(MODES).map(function (k) { return '<option value="' + k + '"' + (m.mode === k ? ' selected' : '') + '>' + esc(t(MODES[k])) + '</option>'; }).join('') + '</select></label><label class="check"><input type="checkbox" id="mm-act"' + (m.active ? ' checked' : '') + '> ' + esc(t('Активен')) + '</label>',
-        actions: [{ label: t('Отмена'), cls: 'ghost' }, { label: t('Сохранить'), cls: 'primary', onClick: function (w) { try { API.saveMethod({ id: m.id, name: $('#mm-name', w).value.trim(), mode: $('#mm-mode', w).value, active: $('#mm-act', w).checked }); setTimeout(route, 0); } catch (e) { showError(e); return false; } } }]
+        body: '<div class="grid2"><label class="field"><span>' + esc(t('Код')) + '</span><input id="mm-code" value="' + esc(m.code || '') + '"></label>' +
+          '<label class="field"><span>' + esc(t('Иерархия (1 — лучше)')) + '</span><input id="mm-rank" type="number" min="1" max="9" value="' + (m.rank || '') + '"></label></div>' +
+          '<label class="field"><span>' + esc(t('Название')) + '</span><input id="mm-name" value="' + esc(m.name) + '"></label>' +
+          '<div class="grid2"><label class="field"><span>' + esc(t('Тип обращения')) + '</span><select id="mm-mode">' + Object.keys(MODES).map(function (k) { return '<option value="' + k + '"' + (m.mode === k ? ' selected' : '') + '>' + esc(t(MODES[k])) + '</option>'; }).join('') + '</select></label>' +
+          '<label class="field"><span>CO₂, ' + esc(t('кг CO₂-экв/т')) + '</span><input id="mm-co2" type="number" step="0.01" value="' + (m.co2 != null ? Math.round(m.co2 * 100000) / 100 : '') + '"></label></div>' +
+          '<label class="field"><span>' + esc(t('Примечание')) + '</span><input id="mm-note" value="' + esc(m.note || '') + '"></label>' +
+          '<label class="check"><input type="checkbox" id="mm-act"' + (m.active ? ' checked' : '') + '> ' + esc(t('Активен')) + '</label>',
+        actions: [{ label: t('Отмена'), cls: 'ghost' }, { label: t('Сохранить'), cls: 'primary', onClick: function (w) {
+          try { var c = $('#mm-co2', w).value; API.saveMethod({ id: m.id, code: $('#mm-code', w).value.trim().toUpperCase(), rank: $('#mm-rank', w).value, name: $('#mm-name', w).value.trim(), mode: $('#mm-mode', w).value, co2: c === '' ? null : +c / 1000, note: $('#mm-note', w).value, active: $('#mm-act', w).checked }); setTimeout(route, 0); } catch (e) { showError(e); return false; } } }]
       });
     }
     $('#m-add').onclick = function () { dlg(null); };

@@ -48,8 +48,9 @@
   window.statusBadge = function (s) { var x = STATUS[s] || STATUS.none; return '<span class="badge ' + x.cls + '">' + esc(t(x.label)) + '</span>'; };
   window.ROLES = { resp: 'Ответственное лицо', reviewer: 'Проверяющий', admin: 'Администратор', mgmt: 'Руководство' };
   window.ORG_TYPES = { department: 'Кафедра / учебная лаборатория', canteen: 'Столовая', cafe: 'Кофейня', hotel: 'Гостиница / общепит', buffet: 'Буфет', lab: 'Лаборатория' };
-  window.CATEGORIES = { food: 'Пищевые / органические', packaging: 'Упаковка (пластик, стекло, металл)', paper: 'Картон / бумага', oil: 'Масло / жиры', other: 'Прочее' };
-  window.MODES = { landfill: 'Захоронение (полигон ТБО)', recycle: 'Переработка', compost: 'Компостирование', feed: 'Корм животным' };
+  window.CATEGORIES = { food: 'Органические', paper: 'Вторсырьё: картон / бумага', packaging: 'Вторсырьё: ПЭТ, стекло, металл', oil: 'Специальные (масло)', other: 'Смешанные' };
+  window.MODES = { landfill: 'Захоронение (полигон ТБО)', recycle: 'Переработка', compost: 'Компостирование', ad: 'Анаэробное сбраживание (биогаз)', feed: 'Корм животным', donate: 'Передача (фудшеринг)' };
+  window.REC_LEVELS = { yes: 'Да', partial: 'Частично', no: 'Нет' };
 
   /* ---------- Тосты ---------- */
   window.toast = function (msg, type) {
