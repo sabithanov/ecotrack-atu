@@ -5,5 +5,7 @@ window.ECOTRACK_CONFIG = {
   supabaseUrl: 'https://xovmwnzxhofisrgyrwek.supabase.co',
   supabaseKey: 'sb_publishable_q7a9ZsoVZC2WcBzuor4D_g_a2x-FUik',
   // публичный адрес сайта — на него ведут QR-коды организаций
-  publicUrl: 'https://sabithanov.github.io/ecotrack-atu/'
+  publicUrl: 'https://sabithanov.github.io/ecotrack-atu/',
+  // номер WhatsApp поддержки в международном формате, только цифры (например 77011234567)
+  supportWhatsApp: ''
 };

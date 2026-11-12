@@ -76,7 +76,12 @@
     var body = $('.modal-body', wrap);
     if (typeof opts.body === 'string') body.innerHTML = opts.body; else if (opts.body) body.appendChild(opts.body);
     var foot = $('.modal-foot', wrap);
-    function close() { wrap.remove(); document.removeEventListener('keydown', onKey); }
+    var closed = false;
+    function close() {
+      if (closed) return; closed = true;
+      wrap.remove(); document.removeEventListener('keydown', onKey);
+      if (opts.onClose) { try { opts.onClose(); } catch (e) { } }
+    }
     function onKey(ev) { if (ev.key === 'Escape') close(); }
     (opts.actions || []).forEach(function (a) {
       var b = document.createElement('button');

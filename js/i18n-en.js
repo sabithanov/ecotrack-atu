@@ -16,6 +16,7 @@ I18N.en = {
   'Способы утилизации': 'Disposal methods', 'QR-коды': 'QR codes', 'Настройки и данные': 'Settings & data', 'Месяц': 'Month', 'Квартал': 'Quarter', 'Год': 'Year',
   'кг': 'kg', 'л': 'L', 'т': 't', 'квартал': 'quarter', 'год': 'year',
   // shell & login
+  'Демо-учётные записи': 'Demo accounts', 'Включаю микрофон…': 'Turning on the microphone…', 'Микрофон занят другим приложением': 'The microphone is used by another app',
   'Учёт пищевых отходов': 'Food waste tracking', 'АО «Алматинский технологический университет»': 'Almaty Technological University JSC',
   'Быстрый вход — выберите роль (пароль demo123)': 'Quick sign-in — choose a role (password demo123)',
   'Форма учёта': 'Tracking form', 'Войдите, чтобы внести данные.': 'Sign in to enter data.',

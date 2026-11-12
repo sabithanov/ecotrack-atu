@@ -167,8 +167,22 @@
   window.VoiceParser = { parse: parse, norm: norm };
 
   /* ---------------- окно голосового ввода ---------------- */
+  /* одна активная запись на всё приложение */
+  var ACTIVE = { rec: null, id: 0, lastEnd: 0 };
+  function stopActive() {
+    ACTIVE.id++;
+    var r = ACTIVE.rec; ACTIVE.rec = null;
+    if (r) {
+      r.onresult = r.onerror = r.onstart = null;
+      r.onend = function () { ACTIVE.lastEnd = Date.now(); };
+      try { r.abort(); } catch (e) { }
+    }
+  }
+
   window.VoiceUI = {
+    stop: stopActive,
     open: function (ctx) {
+      stopActive();
       var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
       var items = [], rec = null, listening = false, baseText = '';
       var lang = I18N.lang === 'kk' ? 'kk-KZ' : I18N.lang === 'en' ? 'en-US' : 'ru-RU';
@@ -182,6 +196,7 @@
         '<div id="v-items"></div>';
       var modal = openModal({
         title: '🎤 ' + t('Голосовой ввод'), body: body, noFocus: true, wide: true,
+        onClose: function () { stopActive(); listening = false; },
         actions: [
           { label: t('Отмена'), cls: 'ghost', onClick: function () { stop(); } },
           { label: t('Сохранить'), cls: 'primary', onClick: function () { return saveAll(); } }
@@ -191,7 +206,7 @@
       var ta = $('#v-text', body), statusEl = $('#v-status', body), micBtn = $('#v-mic', body);
 
       function setStatus(s, cls) { statusEl.textContent = s; micBtn.classList.toggle('on', cls === 'on'); }
-      function stop() { try { if (rec) rec.abort(); } catch (e) { } listening = false; }
+      function stop() { stopActive(); listening = false; micBtn.classList.remove('on'); }
       function reparse() {
         items = parse(ta.value, ctx.types, ctx.methods).map(function (it) {
           return { typeId: it.type ? it.type.id : '', qty: it.qty, methodId: it.method ? it.method.id : (it.type ? it.type.methodId : ''), spokenUnit: it.unit, text: it.text };
@@ -242,27 +257,54 @@
         ctx.save(good);
         return true;
       }
+      /* Каждый запуск — новая сессия со своим номером. Колбэки старых сессий игнорируются,
+         поэтому поздний onend прошлой записи не «ломает» новую (причина, почему 2-й раз не работал). */
+      function idleStatus() { return items.length ? t('Готово — проверьте и сохраните. 🎤 — добавить ещё') : t('Нажмите 🎤 и говорите'); }
       function listen() {
         if (!SR) { setStatus(t('Голосовой ввод недоступен в этом браузере — введите текст (лучше Chrome)')); ta.focus(); return; }
         if (listening) { stop(); setStatus(t('Остановлено')); return; }
-        rec = new SR();
-        rec.lang = $('#v-lang', body).value;
-        rec.interimResults = true; rec.continuous = false; rec.maxAlternatives = 1;
+        stopActive();
+        var myId = ++ACTIVE.id;
+        listening = true;
+        setStatus(t('Включаю микрофон…'), 'on');
         baseText = ta.value.trim();
-        rec.onstart = function () { listening = true; setStatus(t('Слушаю… говорите'), 'on'); };
-        rec.onresult = function (ev) {
-          var fin = '', interim = '';
-          for (var i = 0; i < ev.results.length; i++) { if (ev.results[i].isFinal) fin += ev.results[i][0].transcript; else interim += ev.results[i][0].transcript; }
-          ta.value = (baseText ? baseText + ', ' : '') + (fin + interim).trim();
-          reparse();
-        };
-        rec.onerror = function (ev) {
-          listening = false;
-          var msg = ev.error === 'not-allowed' ? t('Нет доступа к микрофону — разрешите его в браузере') : ev.error === 'no-speech' ? t('Ничего не услышал — попробуйте ещё раз') : ev.error === 'network' ? t('Нужен интернет для распознавания речи') : t('Ошибка распознавания') + ': ' + ev.error;
-          setStatus(msg);
-        };
-        rec.onend = function () { listening = false; micBtn.classList.remove('on'); if (statusEl.textContent === t('Слушаю… говорите')) setStatus(items.length ? t('Готово — проверьте и сохраните. 🎤 — добавить ещё') : t('Нажмите 🎤 и говорите')); };
-        try { rec.start(); } catch (e) { setStatus(t('Ошибка распознавания') + ': ' + e.message); }
+        function begin() {
+          if (myId !== ACTIVE.id) return;
+          var r = new SR();
+          ACTIVE.rec = r; rec = r;
+          r.lang = $('#v-lang', body).value;
+          r.interimResults = true; r.continuous = false; r.maxAlternatives = 1;
+          r.onstart = function () { if (myId !== ACTIVE.id) return; setStatus(t('Слушаю… говорите'), 'on'); };
+          r.onresult = function (ev) {
+            if (myId !== ACTIVE.id) return;
+            var fin = '', interim = '', isFinal = false;
+            for (var i = 0; i < ev.results.length; i++) { if (ev.results[i].isFinal) { fin += ev.results[i][0].transcript; isFinal = true; } else interim += ev.results[i][0].transcript; }
+            ta.value = (baseText ? baseText + ', ' : '') + (fin + interim).trim();
+            reparse();
+            if (isFinal && !interim) setStatus(t('Готово — проверьте и сохраните. 🎤 — добавить ещё'), 'on');
+          };
+          r.onerror = function (ev) {
+            if (myId !== ACTIVE.id || ev.error === 'aborted') return;
+            var msg = ev.error === 'not-allowed' || ev.error === 'service-not-allowed' ? t('Нет доступа к микрофону — разрешите его в браузере') : ev.error === 'no-speech' ? t('Ничего не услышал — попробуйте ещё раз') : ev.error === 'network' ? t('Нужен интернет для распознавания речи') : ev.error === 'audio-capture' ? t('Микрофон занят другим приложением') : t('Ошибка распознавания') + ': ' + ev.error;
+            finish(msg);
+          };
+          r.onend = function () { ACTIVE.lastEnd = Date.now(); if (myId !== ACTIVE.id) return; finish(null); };
+          try { r.start(); }
+          catch (e) {
+            // движок ещё не освободился после прошлой записи — пробуем ещё раз
+            setTimeout(function () { if (myId !== ACTIVE.id) return; try { r.start(); } catch (e2) { finish(t('Ошибка распознавания') + ': ' + e2.message); } }, 500);
+          }
+          // страховка: если браузер «завис» и не прислал onend
+          setTimeout(function () { if (myId === ACTIVE.id && listening) { stopActive(); finish(null); } }, 20000);
+        }
+        function finish(msg) {
+          if (ACTIVE.rec === rec) ACTIVE.rec = null;
+          listening = false; micBtn.classList.remove('on');
+          setStatus(msg || idleStatus());
+        }
+        // iOS требует старт прямо в обработчике нажатия; паузу делаем, только если прошлая запись закончилась только что
+        var since = Date.now() - (ACTIVE.lastEnd || 0);
+        if (since < 350) setTimeout(begin, 350 - since); else begin();
       }
       micBtn.onclick = listen;
       var tmr;

@@ -48,7 +48,7 @@
   .matrix { display: block; }
   .matrix table { width: 100%; border-collapse: collapse; font-size: 15px; margin-top: 10px; }
   .matrix th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); border-bottom: 2px solid var(--line); padding: 8px 10px; }
-  .matrix td { padding: 8px 10px; border-bottom: 1px solid #edf1ee; vertical-align: top; }
+  .matrix td { padding: 6px 10px; border-bottom: 1px solid #edf1ee; vertical-align: top; }
   .matrix td:first-child { font-weight: 700; color: var(--navy); width: 210px; }
   .y { color: var(--green); font-weight: 800; text-align: center; }
   .n { color: #cbd5e1; text-align: center; }
@@ -75,7 +75,7 @@
       <li>Вход по e-mail и паролю (пароли хранятся только как хэш)</li>
       <li>Каждая роль видит только своё: повар — форму своей кухни, проверяющий — все отчёты, руководство — аналитику</li>
       <li>Права проверяются при каждом действии, а не только скрытием кнопок</li>
-      <li>Для демо — кнопки быстрого входа; интерфейс <b>ҚАЗ / РУС / ENG</b></li>
+      <li>Интерфейс <b>ҚАЗ / РУС / ENG</b>; кнопка <b>«?»</b> — ассистент и поддержка</li>
       <li>📲 «Приложение» — установка на телефон как обычное приложение</li>
     </ul>
   </div>
@@ -272,8 +272,25 @@
   <div class="shots"><div class="phone sm"><img src="img/screens/install.png" alt=""></div><div class="phone sm"><img src="img/screens/kk.png" alt=""></div></div>
 </section>
 
-<section class="slide matrix" data-n="14">
-  <div class="kicker">Итог</div>
+<section class="slide" data-n="14">
+  <div>
+    <div class="kicker">Ассистент и поддержка</div>
+    <h2>Ответы на вопросы — прямо в системе</h2>
+    <p class="kz">Сұрақтарға жауап — жүйенің ішінде</p>
+    <span class="who">Все роли</span>
+    <div class="info-title">Что умеет</div>
+    <ul class="info">
+      <li>Кнопка <b>«?»</b> на каждом экране открывает ассистента EcoTrack</li>
+      <li>Отвечает, как пользоваться системой: ввод, голос, отправка, проверка, Excel, установка</li>
+      <li>Отвечает <b>по данным</b>: «Сколько отходов в этом месяце?», «Кто не сдал отчёт?», «Какой статус отчёта?»</li>
+      <li>Понимает вопросы на казахском, русском и английском и отвечает на том же языке</li>
+      <li>«💬 Написать в поддержку» открывает WhatsApp с готовым сообщением «Нужна помощь»</li>
+    </ul>
+  </div>
+  <div class="shots"><div class="phone"><img src="img/screens/assist.png" alt=""></div></div>
+</section>
+
+<section class="slide matrix" data-n="15">  <div class="kicker">Итог</div>
   <h2>Какую информацию получает каждая роль</h2>
   <p class="kz">Әр рөл қандай ақпарат алады</p>
   <table>
@@ -287,6 +304,7 @@
     <tr><td>Отклонения и рекомендации</td><td class="y">своя организация</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
     <tr><td>CO₂ и экопоказатели</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
     <tr><td>Кто не сдал отчёт</td><td class="y">свой срок</td><td class="y">✓ + напомнить</td><td class="y">✓</td><td class="y">✓</td></tr>
+    <tr><td>Ассистент «?» и WhatsApp-поддержка</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
     <tr><td>Справочники, пользователи, QR</td><td class="y">новый вид отхода</td><td class="y">виды отходов, QR</td><td class="y">всё</td><td class="n">—</td></tr>
   </table>
 </section>

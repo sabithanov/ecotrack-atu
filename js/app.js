@@ -96,14 +96,15 @@
     if (q.org) { var o = API.db.orgs.filter(function (x) { return x.id === q.org; })[0]; if (o) orgHint = '<div class="alert info">' + esc(t('Форма учёта')) + ': <b>' + esc(o.name) + '</b>. ' + esc(t('Войдите, чтобы внести данные.')) + '</div>'; }
     $('#app').innerHTML =
       '<div class="login-page"><div class="login-card">' +
-      '<div class="login-top"><img src="assets/icon.svg" alt=""><div><h1>EcoTrack ATU</h1><p>' + esc(t('Цифровая система управления пищевыми отходами университетского комплекса')) + '</p></div>' +
+      '<div class="login-top"><img src="assets/icon.svg" alt="" id="brand-logo"><div><h1>EcoTrack ATU</h1><p>' + esc(t('Цифровая система управления пищевыми отходами университетского комплекса')) + '</p></div>' +
       langSelect() + '</div>' + orgHint +
       '<form id="login-form" autocomplete="on">' +
       '<label class="field"><span>E-mail</span><input type="email" name="email" required autocomplete="username" inputmode="email"></label>' +
       '<label class="field"><span>' + esc(t('Пароль')) + '</span><input type="password" name="password" required autocomplete="current-password"></label>' +
       '<button class="btn primary block" type="submit">' + esc(t('Войти')) + '</button></form>' +
-      '<div class="demo"><div class="demo-title">' + esc(t('Быстрый вход — выберите роль (пароль demo123)')) + '</div><div class="demo-grid">' +
-      demo.map(function (d) { return '<button class="demo-btn" data-email="' + d[0] + '"><b>' + esc(t(d[1])) + '</b><small>' + esc(d[2] ? t(d[2]) : d[0]) + '</small></button>'; }).join('') +
+      /* скрытый блок демо-учёток: открывается нажатием на логотип */
+      '<div class="demo" id="demo-box"' + (sessionStorage.getItem('ecotrack_demo') === '1' ? '' : ' hidden') + '><div class="demo-title">' + esc(t('Демо-учётные записи')) + ' · ' + esc(t('Пароль')) + ': <b>demo123</b></div><div class="demo-grid">' +
+      demo.map(function (d) { return '<button class="demo-btn" data-email="' + d[0] + '"><b>' + esc(t(d[1])) + (d[2] ? ' · ' + esc(t(d[2])) : '') + '</b><small>' + d[0] + '</small></button>'; }).join('') +
       '</div></div>' +
       '<p class="login-foot">' + syncChip() + ' ' + installChip() + '<br>© 2026 EcoTrack ATU · ' + esc(t('АО «Алматинский технологический университет»')) + '</p>' +
       '</div></div>';
@@ -122,6 +123,11 @@
     $$('.demo-btn').forEach(function (b) {
       b.onclick = function () { $('#login-form').email.value = b.dataset.email; $('#login-form').password.value = 'demo123'; doLogin(b.dataset.email, 'demo123'); };
     });
+    $('#brand-logo').onclick = function () {
+      var box = $('#demo-box'); box.hidden = !box.hidden;
+      sessionStorage.setItem('ecotrack_demo', box.hidden ? '0' : '1');
+    };
+    if (window.Assistant) Assistant.mount();
   }
 
   var VIEWS = {
@@ -153,6 +159,7 @@
     var active = h.name === 'report' ? 'reports' : h.name;
     $('#app').innerHTML = shell(user, active);
     bindShell();
+    if (window.Assistant) Assistant.mount();
     try { VIEWS[h.name](user, h); } catch (e) { showError(e); $('#view').innerHTML = '<div class="card"><p>' + esc(e.message || e) + '</p></div>'; }
     window.scrollTo(0, 0);
   }
