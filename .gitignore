@@ -2,3 +2,7 @@
 *.log
 Thumbs.db
 desktop.ini
+
+# служебные файлы для автоматических скриншотов презентации
+_shot.html
+_scenarios.js

@@ -87,6 +87,7 @@
         (rep ? '<a class="btn ghost" href="#/report/' + rep.id + '">' + esc(t('Открыть отчёт и историю')) + '</a>' : '') +
         '</div></section>';
 
+      if (!locked) html += '<button class="fab" id="voice-fab" title="' + esc(t('Голосовой ввод')) + '" aria-label="' + esc(t('Голосовой ввод')) + '">🎤</button>';
       view.innerHTML = html;
       bind(types, methods, locked, rep);
       if (state.typeId || state.editing) openPanel(types, methods);
@@ -125,6 +126,7 @@
       });
       $$('[data-photo]').forEach(function (img) { img.onclick = function () { openModal({ title: t('Фото'), body: '<img class="photo-full" src="' + img.src + '">', actions: [{ label: 'OK' }] }); }; });
       var vb = $('#voice-btn'); if (vb) vb.onclick = function () { voiceInput(types, methods); };
+      var fab = $('#voice-fab'); if (fab) fab.onclick = function () { voiceInput(types, methods); };
     }
 
     function openPanel(types, methods) {
@@ -207,50 +209,29 @@
       });
     }
 
-    /* Голосовой ввод: «пищевые отходы из зала 12 килограмм» → вид + количество */
-    function voiceInput(types, methods) {
-      var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SR) { toast(t('Голосовой ввод не поддерживается этим браузером (используйте Chrome)'), 'err'); return; }
-      var rec = new SR();
-      rec.lang = I18N.lang === 'kk' ? 'kk-KZ' : 'ru-RU';
-      rec.interimResults = false; rec.maxAlternatives = 3;
-      var m = openModal({ title: t('Голосовой ввод'), body: '<div class="voice-pulse">🎤</div><p class="center">' + esc(t('Скажите, например: «очистки овощей двенадцать и пять килограмм»')) + '</p>', actions: [{ label: t('Отмена'), cls: 'ghost', onClick: function () { try { rec.abort(); } catch (e) { } } }], noFocus: true });
-      rec.onresult = function (ev) {
-        var best = null;
-        for (var i = 0; i < ev.results[0].length; i++) {
-          var r = parseVoice(ev.results[0][i].transcript, types);
-          if (r.type && (!best || r.score > best.score)) best = r;
+    /* Голосовой ввод (js/voice.js): одна фраза → несколько записей с проверкой перед сохранением */
+    function voiceInput(types, methods, text) {
+      VoiceUI.open({
+        types: types, methods: methods, text: text,
+        save: function (items) {
+          var saved = 0, dups = [], errs = [];
+          items.forEach(function (it) {
+            try { API.addEntry({ date: state.date, typeId: it.typeId, qty: it.qty, methodId: it.methodId, note: t('голосом') }); saved++; }
+            catch (e) { if (e.code === 'DUP') dups.push(it); else errs.push(API.wasteType(it.typeId).name + ': ' + e.message); }
+          });
+          function finish() {
+            if (saved) toast(t('Сохранено записей') + ': ' + saved);
+            if (errs.length) toast(errs.join('; '), 'err');
+            clearState(); render();
+          }
+          if (dups.length) {
+            confirmDlg(t('Похоже на дубль: такая же запись за эту дату уже есть. Сохранить всё равно?') + ' (' + dups.map(function (d) { return API.wasteType(d.typeId).name + ' ' + d.qty; }).join(', ') + ')', t('Сохранить')).then(function (ok) {
+              if (ok) dups.forEach(function (it) { try { API.addEntry({ date: state.date, typeId: it.typeId, qty: it.qty, methodId: it.methodId, note: t('голосом'), force: true }); saved++; } catch (e) { errs.push(e.message); } });
+              finish();
+            });
+          } else finish();
         }
-        m.close();
-        if (!best) { toast(t('Не удалось распознать вид отхода') + ': «' + ev.results[0][0].transcript + '»', 'err'); return; }
-        state.typeId = best.type.id; state.qty = best.qty || ''; state.editing = null; state.methodId = null;
-        toast(t('Распознано') + ': ' + best.type.name + (best.qty ? ' — ' + best.qty : ''));
-        render();
-      };
-      rec.onerror = function (ev) { m.close(); toast(t('Ошибка распознавания') + ': ' + ev.error, 'err'); };
-      rec.start();
-    }
-    var NUMW = { 'ноль': 0, 'один': 1, 'одна': 1, 'два': 2, 'две': 2, 'три': 3, 'четыре': 4, 'пять': 5, 'шесть': 6, 'семь': 7, 'восемь': 8, 'девять': 9, 'десять': 10, 'одиннадцать': 11, 'двенадцать': 12, 'тринадцать': 13, 'четырнадцать': 14, 'пятнадцать': 15, 'шестнадцать': 16, 'семнадцать': 17, 'восемнадцать': 18, 'девятнадцать': 19, 'двадцать': 20, 'тридцать': 30, 'сорок': 40, 'пятьдесят': 50, 'бір': 1, 'екі': 2, 'үш': 3, 'төрт': 4, 'бес': 5, 'алты': 6, 'жеті': 7, 'сегіз': 8, 'тоғыз': 9, 'он': 10, 'жиырма': 20, 'отыз': 30 };
-    function parseVoice(text, types) {
-      var s = text.toLowerCase().replace(/ё/g, 'е');
-      var qty = null, mnum = s.match(/(\d+(?:[.,]\d+)?)/);
-      if (mnum) qty = +mnum[1].replace(',', '.');
-      else {
-        var sum = 0, found = false;
-        s.split(/\s+/).forEach(function (wd) { if (NUMW[wd] != null) { sum += NUMW[wd]; found = true; } });
-        if (/половин/.test(s)) { sum += 0.5; found = true; }
-        if (found) qty = sum;
-      }
-      var words = s.replace(/[^a-zа-яәіңғүұқөһ\s]/gi, ' ').split(/\s+/).filter(function (x) { return x.length >= 3; });
-      var best = null, bestScore = 0;
-      types.forEach(function (w) {
-        var tw = w.name.toLowerCase().replace(/ё/g, 'е').replace(/[^a-zа-яәіңғүұқөһ\s]/gi, ' ').split(/\s+/).filter(function (x) { return x.length >= 3; });
-        var score = 0;
-        tw.forEach(function (a) { words.forEach(function (b) { var k = Math.min(5, a.length, b.length); if (a.slice(0, k) === b.slice(0, k)) score++; }); });
-        score = score / Math.max(1, tw.length);
-        if (score > bestScore) { bestScore = score; best = w; }
       });
-      return { type: bestScore >= 0.34 ? best : null, qty: qty, score: bestScore };
     }
 
     // восстановление черновика

@@ -29,7 +29,7 @@
       '<div class="side-foot">' + esc(t('Трек 1 · хакатон Smart Food Industries')) + '</div></aside>' +
       '<div class="main"><header class="topbar">' +
       '<div class="tb-title"><img class="tb-logo" src="assets/icon.svg" alt=""><div><b>' + esc(user.name) + '</b><small>' + esc(t(ROLES[user.role])) + (org ? ' · ' + esc(org.short) : '') + '</small></div></div>' +
-      '<div class="tb-actions">' + syncChip() + '<button class="chip" id="lang-btn" title="Тіл / Язык">' + (I18N.lang === 'ru' ? 'ҚАЗ' : 'РУС') + '</button>' +
+      '<div class="tb-actions">' + syncChip() + installChip() + '<button class="chip" id="lang-btn" title="Тіл / Язык">' + (I18N.lang === 'ru' ? 'ҚАЗ' : 'РУС') + '</button>' +
       '<button class="chip" id="logout-btn">' + esc(t('Выход')) + '</button></div></header>' +
       '<main id="view"></main></div>' +
       '<nav class="bottom-nav">' + nav + '</nav></div>';
@@ -38,12 +38,39 @@
   function syncChip() {
     var S = window.Sync;
     var st = S && S.enabled ? S.status : 'local';
-    var label = st === 'online' ? '☁ ' + t('онлайн') : st === 'syncing' ? '☁ …' : st === 'offline' ? '☁ ' + t('офлайн') : t('локально');
-    return '<span id="sync-ind" class="sync-ind ' + st + '" title="' + esc(S ? S.statusText() : '') + '">' + esc(label) + '</span>';
+    var label = st === 'online' ? t('онлайн') : st === 'syncing' ? '…' : st === 'offline' ? t('офлайн') : t('локально');
+    return '<span id="sync-ind" class="sync-ind ' + st + '" title="' + esc(S ? S.statusText() : '') + '">☁<span class="ic-label"> ' + esc(label) + '</span></span>';
   }
   window.syncChip = syncChip;
 
+  /* ---------- Установка как приложение (PWA) ---------- */
+  var installEvt = null;
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installEvt = e; $$('.install-chip').forEach(function (b) { b.hidden = false; }); });
+  window.addEventListener('appinstalled', function () { installEvt = null; toast(t('Приложение установлено')); $$('.install-chip').forEach(function (b) { b.hidden = true; }); });
+  function isStandalone() { return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
+  function installChip() {
+    if (isStandalone()) return '';
+    return '<button class="chip install-chip" title="' + esc(t('Установить приложение')) + '">📲<span class="ic-label"> ' + esc(t('Приложение')) + '</span></button>';
+  }
+  function bindInstall() {
+    $$('.install-chip').forEach(function (b) {
+      b.onclick = function () {
+        if (installEvt) { installEvt.prompt(); installEvt.userChoice.then(function () { installEvt = null; }); return; }
+        var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        openModal({
+          title: '📲 ' + t('Установить приложение'),
+          body: '<div class="install-help"><img src="assets/icon-192.png" alt="" width="72" height="72"><div>' +
+            '<p><b>EcoTrack ATU</b></p>' +
+            '<p>' + esc(ios ? t('Установка на iPhone: нажмите «Поделиться» ⬆ внизу Safari → «На экран „Домой“» → «Добавить».') : t('Установка на Android: меню браузера ⋮ → «Установить приложение» (или «Добавить на главный экран»).')) + '</p>' +
+            '<p class="small muted">' + esc(t('После установки EcoTrack открывается с иконки как обычное приложение — на весь экран, без адресной строки, и работает без интернета.')) + '</p></div></div>',
+          actions: [{ label: 'OK', cls: 'primary' }]
+        });
+      };
+    });
+  }
+
   function bindShell() {
+    bindInstall();
     var si = $('#sync-ind');
     if (si) si.onclick = function () { toast(Sync.statusText()); if (Sync.enabled) Sync.tick(); };
     $('#lang-btn').onclick = function () { I18N.set(I18N.lang === 'ru' ? 'kk' : 'ru'); route(); };
@@ -74,9 +101,10 @@
       '<div class="demo"><div class="demo-title">' + esc(t('Демо-доступы (пароль: demo123) — нажмите, чтобы войти')) + '</div><div class="demo-grid">' +
       demo.map(function (d) { return '<button class="demo-btn" data-email="' + d[0] + '"><b>' + esc(t(d[1])) + '</b><small>' + esc(d[2] ? t(d[2]) : d[0]) + '</small></button>'; }).join('') +
       '</div></div>' +
-      '<p class="login-foot">' + syncChip() + ' ' + esc(t('Студенческий хакатон ATU «Smart Food Industries» · Трек 1')) + '</p>' +
+      '<p class="login-foot">' + syncChip() + ' ' + installChip() + '<br>' + esc(t('Студенческий хакатон ATU «Smart Food Industries» · Трек 1')) + '</p>' +
       '</div></div>';
     $('#lang-btn').onclick = function () { I18N.set(I18N.lang === 'ru' ? 'kk' : 'ru'); renderLogin(q); };
+    bindInstall();
     function doLogin(email, pw) {
       try {
         var u = API.login(email, pw);

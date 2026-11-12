@@ -17,7 +17,10 @@
     ({ orgs: orgsTab, users: usersTab, types: typesTab, methods: methodsTab, qr: qrTab, data: dataTab })[tab](user, $('#tab-body'), h);
   };
 
-  function formUrl(orgId) { return location.origin + location.pathname + '#/form?org=' + orgId; }
+  function formUrl(orgId) {
+    var base = (window.ECOTRACK_CONFIG || {}).publicUrl || (location.origin + location.pathname);
+    return base + '#/form?org=' + orgId;
+  }
 
   /* ---------- Организации ---------- */
   function orgsTab(user, el) {
@@ -172,6 +175,7 @@
   }
 
   /* ---------- Облачная синхронизация ---------- */
+  function cloudOff() { try { var o = JSON.parse(localStorage.getItem('ecotrack_cloud')); return !!(o && o.off); } catch (e) { return false; } }
   function cloudCard() {
     var c = Sync.config() || {};
     return '<section class="card"><div class="card-head"><h2>☁ ' + esc(t('Облачная синхронизация (Supabase)')) + '</h2>' + syncChip() + '</div>' +
@@ -180,8 +184,9 @@
       '<div class="grid2"><label class="field"><span>Project URL</span><input id="c-url" placeholder="https://xxxx.supabase.co" value="' + esc(c.url || '') + '"' + (c.fromFile ? ' disabled' : '') + '></label>' +
       '<label class="field"><span>' + esc(t('Публичный ключ (anon / publishable)')) + '</span><input id="c-key" value="' + esc(c.key || '') + '"' + (c.fromFile ? ' disabled' : '') + '></label></div>' +
       '<div class="row-actions">' +
-      (c.fromFile ? '<span class="small muted">' + esc(t('Настроено в js/config.js')) + '</span>' :
-        '<button class="btn primary" id="c-on">' + esc(t('Подключить')) + '</button>' + (Sync.enabled ? '<button class="btn ghost" id="c-off">' + esc(t('Отключить на этом устройстве')) + '</button>' : '')) +
+      (c.fromFile ? '<span class="small muted">' + esc(t('Настроено в js/config.js')) + '</span>' : '<button class="btn primary" id="c-on">' + esc(t('Подключить')) + '</button>') +
+      (Sync.enabled ? '<button class="btn ghost" id="c-off">' + esc(t('Отключить на этом устройстве')) + '</button>' : '') +
+      (cloudOff() ? '<button class="btn primary" id="c-reon">' + esc(t('Включить облако снова')) + '</button>' : '') +
       (Sync.enabled ? '<button class="btn ghost" id="c-now">⟳ ' + esc(t('Синхронизировать сейчас')) + '</button>' : '') +
       '</div></section>';
   }
@@ -197,7 +202,9 @@
         .then(function () { Sync.saveConfig(probe.url, probe.key); toast(t('Подключено. Перезагрузка…')); setTimeout(function () { location.reload(); }, 600); })
         .catch(function (e) { toast(t('Не удалось подключиться') + ': ' + e.message, 'err'); });
     };
-    if (off) off.onclick = function () { Sync.saveConfig(null); Sync.stop(); toast(t('Облако отключено на этом устройстве')); route(); };
+    if (off) off.onclick = function () { Sync.saveConfig((window.ECOTRACK_CONFIG || {}).supabaseUrl ? 'off' : null); Sync.stop(); toast(t('Облако отключено на этом устройстве')); route(); };
+    var reon = $('#c-reon');
+    if (reon) reon.onclick = function () { Sync.saveConfig(null); location.reload(); };
     if (now) now.onclick = function () { Sync.tick(); toast(t('Синхронизация…')); };
   }
 

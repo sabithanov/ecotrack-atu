@@ -124,9 +124,9 @@
   <div class="kicker">Технология и демо MVP</div>
   <h2>Работающий MVP: PWA + API с проверкой ролей</h2>
   <div class="grid" style="grid-template-columns: 250px 1fr; gap: 26px; margin-top: 14px">
-    <img class="shot" src="img/form.png" style="width:250px;height:500px;object-fit:cover;object-position:top" alt="Форма ввода">
+    <img class="shot" src="img/screens/form.png" style="width:250px;height:500px;object-fit:cover;object-position:top" alt="Форма ввода">
     <div>
-      <img class="shot" src="img/dashboard.png" style="width:100%;height:330px;object-fit:cover;object-position:top left" alt="Dashboard">
+      <img class="shot" src="img/screens/dashboard.png" style="width:100%;height:330px;object-fit:cover;object-position:top left" alt="Dashboard">
       <div class="grid g3" style="margin-top:16px;gap:14px">
         <div class="card" style="padding:14px"><h3 style="font-size:16px">Стек</h3><p style="font-size:14px">PWA (HTML/CSS/JS, офлайн) + облако Supabase (PostgreSQL): смартфон и ноутбук синхронизируются за ~4 с. Chart.js, SheetJS, QR, голосовой ввод</p></div>
         <div class="card" style="padding:14px"><h3 style="font-size:16px">Безопасность</h3><p style="font-size:14px">Роли проверяются в слое API, пароли хранятся как солёный SHA-256; для пилота готова схема с RLS по ролям</p></div>
@@ -137,8 +137,28 @@
   <div class="foot">Демо: https://sabithanov.github.io/ecotrack-atu/ · логины: iskander@atu.kz / reviewer@atu.kz · пароль demo123</div>
 </section>
 
-<!-- 6. Как есть / как будет -->
+<!-- 6. Экраны: какую информацию даёт система -->
 <section class="slide" data-n="6">
+  <div class="kicker">Что видит пользователь</div>
+  <h2>Какую информацию даёт система</h2>
+  <div class="grid" style="grid-template-columns: 200px 1fr 1fr; gap: 18px; margin-top: 14px; align-items: start">
+    <div><img class="shot" src="img/screens/voice.png" style="width:200px;height:400px;object-fit:cover;object-position:top" alt=""><p class="note" style="margin-top:8px"><b>Повар:</b> голосом или 3 касаниями. Итоги дня и месяца, статус и комментарий проверяющего</p></div>
+    <div>
+      <img class="shot" src="img/screens/review.png" style="width:100%;height:205px;object-fit:cover;object-position:top left" alt="">
+      <p class="note" style="margin:6px 0 14px"><b>Проверяющий:</b> отчёт по образцу АТУ, масса, CO₂, «принять / вернуть», история</p>
+      <img class="shot" src="img/screens/nonsub.png" style="width:100%;height:150px;object-fit:cover;object-position:top left" alt="">
+      <p class="note" style="margin-top:6px"><b>Свод:</b> квартал в Excel, список тех, кто не сдал</p>
+    </div>
+    <div>
+      <img class="shot" src="img/screens/dashboard.png" style="width:100%;height:205px;object-fit:cover;object-position:top left" alt="">
+      <p class="note" style="margin:6px 0 14px"><b>Руководство:</b> масса, доля переработки, CO₂, динамика, сравнение организаций</p>
+      <img class="shot" src="img/screens/anomalies.png" style="width:100%;height:150px;object-fit:cover;object-position:top left" alt="">
+      <p class="note" style="margin-top:6px"><b>Аналитика:</b> отклонения +N %, рекомендации и экономия в ₸</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6. Как есть / как будет --><section class="slide" data-n="7">
   <div class="kicker">Бизнес-процесс</div>
   <h2>«Как есть» → «как будет»: −86 % трудозатрат</h2>
   <p class="sub">5 организаций, ≈440 взвешиваний в месяц</p>
@@ -154,7 +174,7 @@
 </section>
 
 <!-- 7. Бизнес-модель -->
-<section class="slide" data-n="7">
+<section class="slide" data-n="8">
   <div class="kicker">Бизнес-модель</div>
   <h2>Пилот в АТУ, затем SaaS для вузов Казахстана</h2>
   <div class="grid g3" style="margin-top:20px">
@@ -170,7 +190,7 @@
 </section>
 
 <!-- 8. Экономический эффект -->
-<section class="slide" data-n="8">
+<section class="slide" data-n="9">
   <div class="kicker">Экономический эффект (пилот АТУ)</div>
   <h2>Окупаемость ≈4 месяца</h2>
   <div class="grid g2" style="margin-top:18px">
@@ -198,7 +218,7 @@
 </section>
 
 <!-- 9. Экологический эффект -->
-<section class="slide" data-n="9">
+<section class="slide" data-n="10">
   <div class="kicker">Экологический эффект · ЦУР 12.3 / 12.5</div>
   <h2>−13 т отходов на полигон и ≈−9 т CO₂-экв. в год</h2>
   <div class="grid g4" style="margin:20px 0">
@@ -214,7 +234,7 @@
 </section>
 
 <!-- 10. План внедрения -->
-<section class="slide" data-n="10">
+<section class="slide" data-n="11">
   <div class="kicker">План внедрения</div>
   <h2>От одной столовой — ко всем вузам</h2>
   <div class="timeline">
@@ -232,7 +252,7 @@
 </section>
 
 <!-- 11. Команда и запрос -->
-<section class="slide title" data-n="11">
+<section class="slide title" data-n="12">
   <div class="kicker" style="margin-top:20px">Команда и запрос</div>
   <h1 style="margin-top:6px;font-size:52px">Готовы к пилоту в АТУ</h1>
   <div class="grid g2" style="margin-top:22px;gap:28px">
@@ -254,5 +274,11 @@
   <div class="meta">Демо: https://sabithanov.github.io/ecotrack-atu/ · Код: https://github.com/sabithanov/ecotrack-atu<br>Логины: iskander@atu.kz · reviewer@atu.kz · admin@atu.kz — пароль demo123</div>
 </section>
 
+<script>
+  (function () { // ?n=5 — показать только один слайд (для экспорта в PNG)
+    var n = +new URLSearchParams(location.search).get('n');
+    if (n) { document.body.style.background = '#fff'; document.querySelectorAll('.slide').forEach(function (s, i) { if (i + 1 !== n) s.remove(); else s.style.margin = '0'; }); }
+  })();
+</script>
 </body>
 </html>

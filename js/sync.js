@@ -21,6 +21,7 @@
     config: function () {
       var o = null;
       try { o = JSON.parse(localStorage.getItem(LS_CLOUD)); } catch (e) { }
+      if (o && o.off) return null; // облако отключено на этом устройстве
       if (o && o.url && o.key) return o;
       var c = window.ECOTRACK_CONFIG || {};
       if (c.supabaseUrl && c.supabaseKey) return { url: c.supabaseUrl, key: c.supabaseKey, fromFile: true };
@@ -28,7 +29,8 @@
     },
     configured: function () { return !!this.config(); },
     saveConfig: function (url, key) {
-      if (url && key) localStorage.setItem(LS_CLOUD, JSON.stringify({ url: url.trim(), key: key.trim() }));
+      if (url === 'off') localStorage.setItem(LS_CLOUD, JSON.stringify({ off: true }));
+      else if (url && key) localStorage.setItem(LS_CLOUD, JSON.stringify({ url: url.trim(), key: key.trim() }));
       else localStorage.removeItem(LS_CLOUD);
     },
 
@@ -53,7 +55,7 @@
       this.status = s; this.error = err || null;
       if (s === 'online') this.lastOk = new Date();
       var el = document.getElementById('sync-ind');
-      if (el) { el.className = 'sync-ind ' + s; el.title = this.statusText(); el.textContent = s === 'online' ? '☁ ' + t('онлайн') : s === 'syncing' ? '☁ …' : s === 'offline' ? '☁ ' + t('офлайн') : t('локально'); }
+      if (el) { el.className = 'sync-ind ' + s; el.title = this.statusText(); el.innerHTML = '☁<span class="ic-label"> ' + (s === 'online' ? t('онлайн') : s === 'syncing' ? '…' : s === 'offline' ? t('офлайн') : t('локально')) + '</span>'; }
     },
     statusText: function () {
       if (!this.enabled) return t('Локальный режим: данные хранятся только в этом браузере');
